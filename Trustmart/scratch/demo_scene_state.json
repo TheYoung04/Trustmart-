@@ -1,0 +1,17 @@
+{
+    "hold": {
+        "fraud_risk": "55.00",
+        "ai_hold": 1,
+        "ai_hold_released_by": null,
+        "ai_hold_released_at": null,
+        "user_id": 20,
+        "synthetic": false
+    },
+    "dispute": {
+        "dispute_id": 13,
+        "transaction_id": 104,
+        "seller_id": 17,
+        "buyer_id": 20
+    },
+    "pending_user_id": 24
+}

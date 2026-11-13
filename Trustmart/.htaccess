@@ -1,0 +1,74 @@
+# ============================================================
+# Trustmart/.htaccess  —  web-root guard
+#
+# WHY THIS FILE EXISTS
+# The served document root for this project IS the project folder
+# (C:\xampp\htdocs\Trustmart is a junction onto the repo). That is
+# convenient for a campus demo, but it means every non-PHP file that
+# belongs in the repo — .env with the DB password, the SQL dumps in
+# db_backups/, payment logs, the internal reports — is a plain
+# download away at http://localhost/Trustmart/<name>.
+#
+# Apache here runs AllowOverride All with mod_rewrite loaded, so this
+# file is honoured. It denies that read access without removing any
+# page the application itself needs to serve.
+#
+# WHAT MUST STAY REACHABLE (do not block these)
+#   index.php  product.php  receipt.php  chat_api.php
+#   public/            landing page + assets/css + assets/js
+#   auth/              login, register, activate, reset password
+#   dashboard/         buyer, seller, admin, profile, admin_returns
+#   payment/           pay, callback, return, gateway_sim
+#   payment/expire_unpaid.php   +  ai_trust_worker.php
+#       ^ both are DESIGNED to be callable over HTTP by an external
+#         scheduler (their file headers document this). They are left
+#         reachable on purpose; they guard themselves with a shared
+#         secret instead — TRUSTMART_CRON_KEY / AI_TRUST_CRON_KEY.
+#   uploads/products/  product images (see uploads/.htaccess)
+#
+# Server-side require_once chains (config/, includes/) are filesystem
+# reads and are NOT affected by blocking their HTTP URLs.
+# ============================================================
+
+# No directory listings. Before this was set, /Trustmart/uploads/products/
+# returned a generated index of every uploaded filename.
+Options -Indexes
+
+# ── 1. Deny dotfiles anywhere in the tree ────────────────────────
+# .env (live credentials), .env.production, .env.example, .gitignore
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# ── 2. Deny data, dump and internal-report extensions anywhere ───
+# sql   = schema + full DB dumps incl. password hashes
+# log   = payment callback traffic
+# md/csv = internal audit + UAT reports
+# the rest are editor/backup/shell artefacts that have no web purpose
+<FilesMatch "\.(sql|log|md|markdown|csv|bak|old|orig|save|new|swp|swo|~|ini|conf|cnf|sh|bash|ps1|bat|cmd|yml|yaml|lock|sqlite|db|tar|gz|tgz|bz2|zip|7z|rar)$">
+    Require all denied
+</FilesMatch>
+
+# Belt-and-braces: these names exist at the root and are not covered
+# above because they carry no extension worth listing.
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|npm-shrinkwrap\.json)$">
+    Require all denied
+</FilesMatch>
+
+# ── 3. Deny the non-public directories outright ──────────────────
+# config/   db + payment + AI secrets and the migration files
+# includes/ bootstrap code — reading it reveals internals, and it is
+#           only ever require_once'd, never linked to by a browser
+# db_backups/ logs/ scratch/ tests/ docs/
+# scratch/ and tests/ each contain their own PHP_SAPI!=='cli' guard, but
+# that guard only answers requests that reach the PHP file; blocking the
+# path first means the source is never executed or revealed at all.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:config|includes|db_backups|logs|scratch|tests|docs|node_modules|vendor|\.git)/ - [F,L,NC]
+</IfModule>
+
+# Fallback if mod_rewrite is ever disabled: same directories, same 403.
+<IfModule !mod_rewrite.c>
+    RedirectMatch 403 ^/(?:config|includes|db_backups|logs|scratch|tests|docs|node_modules|vendor|\.git)/
+</IfModule>

@@ -1,0 +1,37 @@
+# ============================================================
+# Trustmart/uploads/.htaccess — upload-directory guard
+#
+# This folder holds seller-uploaded product images and it MUST stay
+# readable over HTTP, because product.php, the buyer grid and the
+# seller tables all point at /Trustmart/uploads/products/<file>.
+#
+# It is the one writable location in the tree, so it is also the place
+# an upload filter would have to fail for an attacker to get code onto
+# the server. Two rules therefore apply:
+#
+#   1. Nothing in here may be executed as a script, whatever its name.
+#      seller.php whitelists image/jpeg|png|webp via finfo + getimagesize,
+#      but that guard is one layer, not the whole defence.
+#   2. Only genuine image files are served at all. Everything else in
+#      this directory is invisible to a browser.
+#
+# If a future feature stores non-image media here (PDF spec sheet, video),
+# add its extension to the allow-list below — do not remove the default
+# deny.
+# ============================================================
+
+Options -Indexes -MultiViews
+
+# Default: serve nothing.
+Require all denied
+
+# Allow-list: the media types the uploader actually accepts.
+<FilesMatch "(?i)\.(jpe?g|png|webp|gif)$">
+    Require all granted
+</FilesMatch>
+
+# Belt-and-braces: never let a script name in this tree be executed,
+# even if the allow-list above is ever widened by mistake.
+<FilesMatch "(?i)\.(php[0-9]?|phtml|phps|phar|pl|py|jsp|asp|aspx|sh|cgi|exe|bat|js|html|htm|svg)$">
+    Require all denied
+</FilesMatch>

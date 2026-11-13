@@ -1,0 +1,46 @@
+You are a senior QA engineer and UAT lead working inside this repository. Do full UAT testing preparation for EVERY user role in this project, based on the actual code, not assumptions.
+
+## Step 1: Discover (read the codebase first, do not write tests yet)
+- Identify all user roles (check auth, middleware, guards, policies, enums, DB seeds/migrations, RBAC config).
+- Build a permission matrix: role vs. route/page/API endpoint/action (create, view, edit, delete, approve, export).
+- List all modules, workflows, forms, validations, notifications/emails, and integrations.
+- Identify the tech stack and any existing test framework/config (Jest, PHPUnit, Pytest, Playwright, Cypress, etc.).
+- Output the role list and permission matrix, and list anything unclear. Wait for my confirmation before Step 2 if anything is ambiguous; otherwise proceed.
+
+## Step 2: UAT plan per role
+For EACH role, separately:
+1. Role summary: goals, typical tasks, what they must NOT be able to do.
+2. End-to-end business scenarios from start to finish.
+3. Test cases covering:
+   - Login, logout, password reset, session expiry
+   - Every feature the role can access (CRUD, search, filter, pagination, export, file upload)
+   - Workflow and approval steps, including hand-offs to other roles
+   - Positive, negative (invalid input, missing fields, duplicates), and boundary/edge cases
+   - Access control: the role CANNOT reach other roles' pages, actions, or data, including via direct URL and direct API calls
+   - Notifications/emails
+   - Reports/dashboards data accuracy
+   - Error messages and empty states
+4. Cross-role scenarios (e.g. Staff submits, Manager approves, Admin reports).
+
+Save the plan as `/docs/uat/UAT_PLAN.md` and one file per role: `/docs/uat/uat-[role].md`, using this table format:
+| Test ID | Module | Scenario | Preconditions | Steps | Test Data | Expected Result | Priority | Status |
+Use IDs like UAT-[ROLE]-001.
+
+## Step 3: Automate
+- Use the framework already in the repo. If none exists, recommend one (prefer Playwright for UI, plus API tests) and ask before installing.
+- Create tests under `/tests/uat/[role]/`, one spec file per module, named after the Test IDs.
+- Create reusable helpers: login-as-role fixture, test data factory/seeds, cleanup/teardown.
+- Seed test accounts for each role (never use production data or real credentials; use .env.test).
+- Include automated negative access-control tests for every role/endpoint pair.
+- Mark scenarios that cannot be automated (visual checks, email content, usability) as MANUAL in the plan.
+
+## Step 4: Run and report
+- Run the tests, fix any test-code errors you introduced, and do NOT modify application code to make tests pass.
+- Report real application bugs separately in `/docs/uat/DEFECTS.md` (ID, role, steps to reproduce, expected vs. actual, severity, file/line suspected).
+- Produce `/docs/uat/UAT_SUMMARY.md`: pass/fail counts per role, coverage gaps, risks, and a sign-off checklist per role.
+
+## Rules
+- Base everything on what exists in the code. Mark any assumption with "ASSUMPTION:".
+- Don't invent features or roles that aren't in the repo.
+- Work role by role; after each role, give a short summary before continuing.
+- Show me the plan of files you'll create before writing them.

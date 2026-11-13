@@ -1,0 +1,29 @@
+# Environment configuration
+.env
+# Local copies of the production template — the template itself
+# (.env.production) is secret-free and safe to commit; any *filled*
+# copy is not.
+.env.production.local
+.env.production.*
+!.env.production
+
+# Database backups
+db_backups/
+
+# Logs
+logs/
+*.log
+
+# Uploaded files (optional - comment out if you want to commit uploads)
+# uploads/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

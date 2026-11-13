@@ -1,0 +1,28 @@
+# ── Secrets & environment files (NEVER commit) ─────────────────────────────
+.env
+**/.env
+.env.*.local
+code_backups/
+
+# ── Database dumps (contain password hashes & demo accounts) ───────────────
+db_backups/
+Trustmart/db_backups/
+*.sql.bak
+trustmart_pre_smart_score_*.sql
+
+# ── Logs ────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Deployment artifacts (local staging) ───────────────────────────────────
+deploy_staging/
+trustmart_deploy.zip
+
+# ── IDE / OS files ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
