@@ -17,6 +17,10 @@ logs/
 # ── Deployment artifacts (local staging) ───────────────────────────────────
 deploy_staging/
 trustmart_deploy.zip
+.vercel/
+.vercel-tmp/
+landing/.vercel/
+landing/.env.local
 
 # ── IDE / OS files ─────────────────────────────────────────────────────────
 .vscode/
