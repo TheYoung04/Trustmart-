@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm  = $_POST['password2']     ?? '';
 
     if ($password !== $confirm) {
-        $error = 'Kata laluan tidak sepadan.';
+        $error = 'Kata laluan baharu dan pengesahan tidak sepadan.';
     } elseif (strlen($password) < 8) {
         $error = 'Kata laluan mestilah sekurang-kurangnya 8 aksara.';
     } elseif (strlen($password) > 128) {
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <?php if ($success): ?>
       <div class="icon success">✓</div>
       <div class="title">Kata Laluan Berjaya Ditukar!</div>
-      <p class="text">Kata laluan anda telah dikemaskini. Sila log masuk dengan kata laluan baharu anda.</p>
+      <p class="text">Kata laluan anda telah dikemas kini. Sila log masuk dengan kata laluan baharu anda.</p>
       <a href="../public/index.php" class="btn">Pergi ke Log Masuk →</a>
 
     <?php elseif ($showForm): ?>
@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         <div class="form-group">
           <label class="form-label">Sahkan Kata Laluan</label>
           <input class="form-input" type="password" name="password2"
-                 placeholder="Ulang kata laluan" required>
+                 placeholder="Taip semula kata laluan" required>
         </div>
         <button type="submit" class="btn">Tukar Kata Laluan →</button>
       </form>

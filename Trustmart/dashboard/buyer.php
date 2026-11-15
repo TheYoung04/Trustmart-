@@ -79,7 +79,7 @@ if (isset($_GET['action'])) {
                 if (!$txn) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success'=>false,'message'=>'Pesanan tidak dijumpai.']));
+                    die(json_encode(['success'=>false,'message'=>'Pesanan tidak ditemui.']));
                 }
                 if (!in_array($txn['status'], ['Menunggu'], true)) {
                     $pdo->rollBack();
@@ -283,7 +283,7 @@ if (isset($_GET['action'])) {
 
             if ($rating < 1 || $rating > 5) {
                 http_response_code(422);
-                die(json_encode(['success'=>false,'message'=>'Rating mesti antara 1 dan 5.']));
+                die(json_encode(['success'=>false,'message'=>'Penilaian mesti antara 1 dan 5.']));
             }
             if (mb_strlen($comment) > 2000) {
                 http_response_code(422);
@@ -395,13 +395,13 @@ if (isset($_GET['action'])) {
                 if (!$txn) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Pesanan tidak dijumpai.']));
+                    die(json_encode(['success' => false, 'message' => 'Pesanan tidak ditemui.']));
                 }
 
                 if (!in_array($txn['status'], ['Disahkan', 'Selesai'], true)) {
                     $pdo->rollBack();
                     http_response_code(422);
-                    die(json_encode(['success' => false, 'message' => 'Aduan hanya boleh difailkan untuk pesanan yang disahkan atau selesai sahaja.']));
+                    die(json_encode(['success' => false, 'message' => 'Aduan hanya boleh difailkan untuk pesanan yang telah disahkan atau selesai sahaja.']));
                 }
 
                 $stmt = $pdo->prepare(
@@ -1249,7 +1249,7 @@ function trust_color(float $score): string {
                 <?php elseif ($o['status'] === 'Disahkan'): ?>
                   <button class="btn btn-primary btn-sm"
                     onclick="confirmReceived(<?= $o['transaction_id'] ?>)">
-                    Selesai Terima
+                    Sahkan Penerimaan
                   </button>
                   <button class="btn btn-danger btn-sm"
                     onclick="cancelOrder(<?= $o['transaction_id'] ?>)">
@@ -1330,7 +1330,7 @@ function trust_color(float $score): string {
             <div id="chat-messages-stream" style="flex:1; padding:20px; overflow-y:auto; background:var(--cream); display:flex; flex-direction:column; gap:10px;">
               <div class="empty-state" style="margin:auto;">
                 <div style="font-size:40px; opacity:0.3; margin-bottom:10px;">💬</div>
-                <div style="font-weight:500;">Sila pilih kenalan jualan untuk memulakan sembang</div>
+                <div style="font-weight:500;">Sila pilih penjual untuk memulakan sembang</div>
               </div>
             </div>
 
@@ -1358,11 +1358,11 @@ function trust_color(float $score): string {
       <?php endfor ?>
     </div>
     <div style="text-align:center;font-size:12px;color:var(--ink3);
-                margin-bottom:16px" id="star-label">Pilih rating</div>
+                margin-bottom:16px" id="star-label">Pilih penilaian</div>
     <textarea class="inp" id="review-comment"
               placeholder="Kongsi pengalaman anda (pilihan)..."></textarea>
     <div class="modal-footer">
-      <button class="btn" onclick="closeModal()">Lewat</button>
+      <button class="btn" onclick="closeModal()">Langkau</button>
       <button class="btn btn-primary" id="review-submit-btn"
               disabled title="Sila pilih sekurang-kurangnya 1 bintang dahulu"
               onclick="submitReview()">Hantar Ulasan</button>
@@ -1521,7 +1521,7 @@ function renderOrdersList(orders) {
     listEl.innerHTML = `
       <div class="empty-state">
         <div style="font-size:40px;opacity:.3;margin-bottom:12px">📦</div>
-        <div style="font-size:15px;font-weight:500;margin-bottom:6px">Tiada pesanan dijumpai</div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:6px">Tiada pesanan ditemui</div>
       </div>`;
     return;
   }
@@ -1547,7 +1547,7 @@ function renderOrdersList(orders) {
       `;
     } else if (o.status === 'Disahkan') {
       buttons = `
-        <button class="btn btn-primary btn-sm" onclick="confirmReceived(${o.transaction_id})">Selesai Terima</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmReceived(${o.transaction_id})">Sahkan Penerimaan</button>
         <button class="btn btn-danger btn-sm" onclick="cancelOrder(${o.transaction_id})">Batalkan</button>
         ${!o.dispute_id ? `<button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="openDisputeModal(${o.transaction_id})">⚠️ Laporkan Masalah</button>` : ''}
       `;
@@ -1682,7 +1682,7 @@ function renderProductGrid(products) {
   if (!products.length) {
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">' +
       '<div style="font-size:40px;opacity:.3;margin-bottom:12px">🔍</div>' +
-      '<div style="font-size:15px;font-weight:500">Tiada produk dijumpai</div></div>';
+      '<div style="font-size:15px;font-weight:500">Tiada produk ditemui</div></div>';
     return;
   }
   grid.innerHTML = products.map(p => `

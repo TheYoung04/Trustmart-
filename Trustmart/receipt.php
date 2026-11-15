@@ -192,7 +192,7 @@ if ($is_online_payment) {
     } elseif ($pay_state === 'failed') {
         $pay_style = 'unpaid';    $pay_text = '✗ Pembayaran gagal';
     } elseif ($pay_state === 'refunded') {
-        $pay_style = 'confirmed'; $pay_text = 'Dipulangkan';
+        $pay_style = 'confirmed'; $pay_text = 'Dikembalikan';
     } else { // unpaid
         $pay_style = 'unpaid';    $pay_text = 'Belum dibayar';
     }
@@ -468,16 +468,16 @@ if ($is_online_payment) {
         <!-- Header -->
         <div class="receipt-header">
             <div class="receipt-logo">Trust<span>Mart</span></div>
-            <div class="receipt-subtitle">Marketplace Intra-Kampus UTHM</div>
+            <div class="receipt-subtitle">Pasaran Intra-Kampus UTHM</div>
         </div>
         
         <!-- Body -->
         <div class="receipt-body">
             <?php if ($is_pending): ?>
             <div class="pending-banner">
-                ⏳ <strong>Resit Provisional — pesanan masih Menunggu (Pending).</strong>
+                ⏳ <strong>Resit Sementara — pesanan masih berstatus Menunggu.</strong>
                 <?php if ($is_online_payment && $pay_style === 'paid'): ?>
-                    Pembayaran telah diterima. Resit menjadi muktamad sebaik penjual menekan <b>Sahkan</b>.
+                    Pembayaran telah diterima. Resit menjadi muktamad sebaik penjual menekan butang <b>Sahkan</b>.
                 <?php elseif ($is_online_payment): ?>
                     Selesaikan pembayaran untuk mengesahkan pesanan ini.
                 <?php else: ?>
@@ -501,7 +501,7 @@ if ($is_online_payment) {
                         <div class="info-label">Status</div>
                         <div class="info-value">
                             <span class="status-badge status-<?= $status_style ?>">
-                                <?= htmlspecialchars($txn_status) ?><?= $is_pending ? ' (Pending)' : '' ?>
+                                <?= htmlspecialchars($txn_status) ?>
                             </span>
                         </div>
                     </div>
@@ -561,7 +561,7 @@ if ($is_online_payment) {
                 <!-- Total -->
                 <div class="receipt-total-section">
                     <div class="total-row">
-                        <span>Subtotal:</span>
+                        <span>Subjumlah:</span>
                         <span>RM <?= number_format($transaction['total_amount'], 2) ?></span>
                     </div>
                     <div class="total-row">
@@ -613,8 +613,8 @@ if ($is_online_payment) {
         <!-- Footer -->
         <div class="receipt-footer">
             <p><strong>TrustMart</strong> - Platform Jual Beli Pelajar UTHM</p>
-            <p style="margin-top: 8px;"><?php if ($is_pending): ?>Resit provisional — sah sebagai pengesahan pesanan, belum muktamad sehingga pengesahan penjual.<?php else: ?>Resit ini dijana secara automatik dan sah tanpa tandatangan.<?php endif; ?></p>
-            <p style="margin-top: 4px;">Untuk sebarang pertanyaan, hubungi penjual melalui sistem chat TrustMart.</p>
+            <p style="margin-top: 8px;"><?php if ($is_pending): ?>Resit sementara — sah sebagai bukti pesanan, tetapi belum muktamad sehingga penjual mengesahkannya.<?php else: ?>Resit ini dijana secara automatik dan sah tanpa tandatangan.<?php endif; ?></p>
+            <p style="margin-top: 4px;">Untuk sebarang pertanyaan, hubungi penjual melalui sistem sembang TrustMart.</p>
             <p style="margin-top: 12px; font-size: 11px; opacity: 0.7;">
                 Dicetak pada: <?= date('d/m/Y H:i:s') ?>
             </p>

@@ -183,7 +183,7 @@ $redirect = $redirects[$user['role']] ?? '../index.php';
 // ── Respond ───────────────────────────────────────────────────
 echo json_encode([
     'success'  => true,
-    'message'  => 'Log masuk berjaya. Mengalihkan...',
+    'message'  => 'Log masuk berjaya. Sedang mengalihkan...',
     'role'     => $user['role'],
     'redirect' => $redirect,
 ]);

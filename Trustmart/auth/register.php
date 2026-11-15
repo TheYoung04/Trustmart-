@@ -63,9 +63,9 @@ if ($is_staff) {
     // like matric numbers (^[A-Z]{1,2}\d{6,7}$), and an invented strict pattern
     // would lock real staff out. Uniqueness and the email domain do the work.
     if ($staff_no === '') {
-        $errors[] = 'No. pegawai diperlukan untuk akaun staf.';
+        $errors[] = 'No. staf diperlukan untuk akaun staf.';
     } elseif (!preg_match('/^[A-Z0-9][A-Z0-9\-\/.]{2,29}$/', $staff_no)) {
-        $errors[] = 'Format no. pegawai tidak sah. Gunakan 3–30 aksara (huruf, nombor, - / .)';
+        $errors[] = 'Format no. staf tidak sah. Gunakan 3–30 aksara (huruf, nombor, - / .)';
     }
 } elseif ($matric_no === '') {
     $errors[] = 'No. matrik diperlukan.';
@@ -108,14 +108,14 @@ if (strlen($password) < 8) {
 // pentadbir accounts are created manually by IT admin.
 $allowed_roles = ['pembeli', 'penjual'];
 if (!in_array($role, $allowed_roles, true)) {
-    $errors[] = 'Peranan tidak sah. Sila pilih Pembeli atau Penjual.';
+    $errors[] = 'Jenis akaun tidak sah. Sila pilih Pembeli atau Penjual.';
 }
 
 // PTU is a centre, not a faculty, and it employs staff — so a staff account may
 // name it. Other UTHM units are not enumerated here on purpose: inventing an
 // org-unit list the proposal never covered would be worse than asking for a
 // faculty. Staff from another unit pick their closest faculty.
-$allowed_faculties = ['FKEE', 'FKMP', 'FSKTM', 'FKAAB', 'FPTP', 'FPTV'];
+$allowed_faculties = ['FKEE', 'FKMP', 'FSKTM', 'FKAAB', 'FPTP', 'FPTV', 'PPD'];
 if ($is_staff) {
     $allowed_faculties[] = 'PTU';
 }
@@ -187,7 +187,7 @@ try {
 
     // Primary delivery channel: email the activation link to the address the
     // user just supplied. The token is NEVER returned to remote callers.
-    $mail_body = "Hi {$full_name},\n\n"
+    $mail_body = "Hai {$full_name},\n\n"
         . "Terima kasih kerana mendaftar dengan TrustMart.\n"
         . "Sila aktifkan akaun anda dengan membuka pautan berikut:\n\n"
         . trustmart_absolute_link($activation_link) . "\n\n"

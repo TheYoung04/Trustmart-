@@ -286,7 +286,7 @@ $page_title = 'Pembayaran Dalam Talian';
         
         <div class="simulator-notice">
             <strong>⚠️ Mod Simulasi</strong><br>
-            Ini adalah gateway pembayaran simulasi untuk tujuan ujian. 
+            Ini ialah gerbang pembayaran simulasi untuk tujuan ujian. 
             Pembayaran akan berjaya dalam <?= (PAYMENT_SIM_SUCCESS_RATE * 100) ?>% kes.
         </div>
     </div>

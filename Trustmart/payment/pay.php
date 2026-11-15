@@ -47,7 +47,7 @@ $stmt->execute([$transaction_id, $user_id]);
 $transaction = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$transaction) {
-    $_SESSION['error_msg'] = 'Transaksi tidak dijumpai atau sudah dibayar';
+    $_SESSION['error_msg'] = 'Transaksi tidak ditemui atau sudah dibayar';
     header('Location: ../dashboard/buyer.php');
     exit;
 }
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $use_simulation   = false;
             $use_real_gateway = true;
         } else {
-            $_SESSION['error_msg'] = 'Kaedah pembayaran tidak tersedia. Sila pilih gateway yang sah.';
+            $_SESSION['error_msg'] = 'Kaedah pembayaran tidak tersedia. Sila pilih gerbang pembayaran yang sah.';
             header('Location: ?txn=' . $transaction_id);
             exit;
         }
@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Simulated gateway — reachable only in development mode (already
             // enforced above, and re-checked inside gateway_sim.php itself).
             if (!payment_simulation_allowed()) {
-                throw new Exception('Tiada gateway pembayaran yang tersedia.');
+                throw new Exception('Tiada gerbang pembayaran yang tersedia.');
             }
             $payment_url = PAYMENT_BASE_URL . '/payment/gateway_sim.php?ref=' . urlencode($payment_ref);
             
@@ -268,7 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     } catch (Exception $e) {
         $pdo->rollBack();
-        $_SESSION['error_msg'] = 'Ralat membuat pembayaran: ' . $e->getMessage();
+        $_SESSION['error_msg'] = 'Ralat semasa memproses pembayaran: ' . $e->getMessage();
         header('Location: ?txn=' . $transaction_id);
         exit;
     }

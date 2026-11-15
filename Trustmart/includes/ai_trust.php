@@ -132,10 +132,10 @@ function ai_trust_hold_notice_html(array $ai): string
     $risk = (int) round((float) $ai['fraud_risk']);
     return '<div style="font-size:13px;color:var(--red);padding:12px;background:var(--red-bg);'
          . 'border-radius:var(--r)" role="alert">'
-         . '<strong>Penjual ini sedang dalam siasatan PTU (Lapisan AI).</strong>'
+         . '<strong>Penjual ini sedang disiasat oleh pentadbir (Lapisan AI).</strong>'
          . '<div style="font-size:12px;color:var(--ink2);margin-top:6px">'
-         . 'Risiko penipuan AI tinggi (' . $risk . '%). Pesanan baharu dihalang sementara '
-         . '— pilih penjual lain atau cuba kemudian.'
+         . 'Risiko penipuan dikesan AI: tinggi (' . $risk . '%). Pesanan baharu dihalang sementara '
+         . '— pilih penjual lain atau cuba lagi kemudian.'
          . '</div></div>';
 }
 
@@ -189,7 +189,7 @@ function ai_trust_badge_html(array $ai): string
     $color = $risk >= 50 ? 'var(--red)' : 'var(--gold)';
     $label = $adj < 0 ? '&minus;' . number_format(abs($adj), 0) : '&#9888;';
     $title = $adj < 0
-        ? 'Lapisan AI mengesan isyarat risiko — skor dilaras ' . number_format($adj, 0) . ' daripada skor asas.'
+        ? 'Lapisan AI mengesan isyarat risiko — skor diselaraskan ' . number_format($adj, 0) . ' mata daripada skor asas.'
         : 'Lapisan AI mengesan risiko penipuan yang perlu dipantau.';
     return '<span title="' . $title . '" '
         . 'style="font-size:11px;color:' . $color . ';font-weight:600">🛡 AI ' . $label . '</span>';
@@ -224,11 +224,11 @@ function ai_trust_release_text(array $ai): string
 function ai_trust_signal_text(string $code, string $value, string $reason): array {
     if ($code === 'circular_trading' && preg_match('/(\d+)\D+(\d+)/', $reason, $m)) {
         return ['Jual-beli dengan orang yang sama',
-            'Penjual ini membuat urus niaga pusingan: jual kepada seseorang, lalu beli semula daripada orang yang sama (' . (int)$m[1] . ' orang daripada ' . (int)$m[2] . ' rakan niaga). Urus niaga macam ini biasanya palsu — tujuannya untuk sama-sama naikkan skor kepercayaan.'];
+            'Penjual ini melakukan urus niaga secara kitaran: menjual kepada seseorang, lalu membeli semula daripada orang yang sama (' . (int)$m[1] . ' orang daripada ' . (int)$m[2] . ' pembeli). Urus niaga seperti ini biasanya palsu — tujuannya untuk sama-sama naikkan skor kepercayaan.'];
     }
     if ($code === 'scam_language' && preg_match('/(\d+)/', $reason, $m)) {
         return ['Minta bayaran luar TrustMart',
-            (int)$m[1] . ' mesej chat penjual ini meminta pembeli bayar terus kepadanya (contoh: transfer bank). Bayaran di luar TrustMart tidak dilindungi — wang mungkin hilang, barang tidak sampai.'];
+            (int)$m[1] . ' mesej chat penjual ini meminta pembeli bayar terus kepadanya (contoh: pindahan bank). Bayaran di luar TrustMart tidak dilindungi — wang mungkin hilang, barang tidak sampai.'];
     }
     if ($code === 'low_review_credibility' && preg_match('/([\d.]+)\/100 across (\d+)/', $reason, $m)) {
         return ['Ulasan nampak palsu',
@@ -236,7 +236,7 @@ function ai_trust_signal_text(string $code, string $value, string $reason): arra
     }
     if ($code === 'duplicate_reviews' && preg_match('/(\d+)/', $reason, $m)) {
         return ['Ulasan salin tampal',
-            (int)$m[1] . ' kumpulan ulasan menulis teks yang sama sekali. Pembeli sebenar tidak akan menulis perkara yang sama — ini petanda ulasan palsu.'];
+            (int)$m[1] . ' kumpulan ulasan menulis teks yang sama persis. Pembeli sebenar tidak akan menulis perkara yang sama — ini petanda ulasan palsu.'];
     }
     return [$code, $reason];
 }
@@ -270,7 +270,7 @@ function ai_trust_detail_html(array $ai): string
     if ($risk >= 50) {
         $forYou = $held
             ? 'Pembelian baharu daripada penjual ini <b>dihalang sementara</b> — admin PTU perlu menyemak dahulu.'
-            : 'Pembelian <b>dibenarkan</b> — admin PTU telah menyemak dan <b>melepaskan penahan</b>'
+            : 'Pembelian <b>dibenarkan</b> — admin PTU telah menyemak dan <b>menarik balik penahanan</b>'
                 . ai_trust_release_text($ai)
                 . '. Amaran risiko AI di atas masih kekal dalam rekod.';
     } elseif ($risk >= 25) {
@@ -292,7 +292,7 @@ function ai_trust_detail_html(array $ai): string
         . '<div style="font-size:12px;color:var(--ink2);margin-bottom:8px">'
         . '<b>Maksudnya untuk anda:</b> ' . $forYou . '</div>'
         . '<div style="font-size:11px;color:var(--ink3);margin-bottom:8px">'
-        . 'Amaran AI ini <b>tidak mengubah skor asas</b> penjual — keputusan sebenar di tangan admin PTU.</div>';
+        . 'Amaran AI ini <b>tidak mengubah skor asas</b> penjual — keputusan sebenar berada di tangan pentadbir.</div>';
 
     if (!empty($ai['signals'])) {
         $html .= '<ul style="margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--ink2)">';

@@ -124,7 +124,7 @@ if (isset($_GET['action'])) {
                     http_response_code(404);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Penjual tidak dijumpai.',
+                        'message' => 'Penjual tidak ditemui.',
                     ]));
                 }
 
@@ -159,7 +159,7 @@ if (isset($_GET['action'])) {
                 http_response_code(500);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Status penjual tidak dapat dikemaskini. Sila cuba lagi.',
+                    'message' => 'Status penjual tidak dapat dikemas kini. Sila cuba lagi.',
                 ]);
             }
             exit;
@@ -271,7 +271,7 @@ if (isset($_GET['action'])) {
                     http_response_code(404);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Aduan tidak dijumpai.',
+                        'message' => 'Aduan tidak ditemui.',
                     ]));
                 }
 
@@ -393,13 +393,13 @@ if (isset($_GET['action'])) {
                                 )->execute([
                                     $dispute_id,
                                     $order['transaction_id'],
-                                    'Pulangan dikehendaki: ' . ($notes ?: 'Tiada nota tambahan')
+                                    'Pemulangan barang diperlukan: ' . ($notes ?: 'Tiada nota tambahan')
                                 ]);
                                 
-                                $settlement_note = 'Pulangan RM' . number_format($refund_amount, 2) . 
-                                    ' DITAHAN sehingga barang dipulangkan dan disahkan. Return ID: ' . $pdo->lastInsertId();
+                                $settlement_note = 'Pemulangan wang RM' . number_format($refund_amount, 2) . 
+                                    ' DITAHAN sehingga barang dipulangkan dan disahkan. ID Pemulangan: ' . $pdo->lastInsertId();
                             } else {
-                                $settlement_note = 'Pulangan RM' . number_format($refund_amount, 2) . 
+                                $settlement_note = 'Pemulangan wang RM' . number_format($refund_amount, 2) . 
                                     ' telah didaftarkan ke senarai pulangan untuk diproses (tiada keperluan pulangan barang).';
                             }
                         } elseif (in_array($order['payment_status'], ['paid', 'paid_cash'], true)) {
@@ -411,10 +411,10 @@ if (isset($_GET['action'])) {
                             // confirmed it", which cash cannot claim. The decision
                             // stays queued in disputes.settlement_status and is worked
                             // from the manual list on the Pulangan tab.
-                            $settlement_note = 'Tiada pembayaran gateway selesai - pulangan RM' . number_format($refund_amount, 2) . ' perlu diselesaikan secara manual oleh PTU (bukan bayaran dalam talian).';
+                            $settlement_note = 'Tiada pembayaran gerbang selesai - pemulangan wang RM' . number_format($refund_amount, 2) . ' perlu diselesaikan secara manual oleh PTU (bukan bayaran dalam talian).';
                             error_log('[resolve_dispute] RECONCILE dispute=' . $dispute_id . ' txn=' . $order['transaction_id'] . ' payment=' . $order['payment_status'] . '/' . $order['payment_type'] . ' but no completed payment; manual settlement queued');
                         } else {
-                            $settlement_note = 'Order belum dibayar; keputusan settlement dirakam tanpa pulangan.';
+                            $settlement_note = 'Pesanan belum dibayar; keputusan penyelesaian dirakam tanpa pemulangan wang.';
                         }
 
                         // Apply the fulfilment decision WITHOUT restocking goods.
@@ -435,7 +435,7 @@ if (isset($_GET['action'])) {
                             // Deliberately NO product restock: goods may already be delivered.
                             if ($order['order_status'] === 'Selesai') {
                                 $settlement_note = ($settlement_note ? $settlement_note . ' ' : '')
-                                    . 'Pesanan Selesai telah dibatalkan oleh PTU (tiada restock automatik).';
+                                    . 'Pesanan Selesai telah dibatalkan oleh PTU (tiada stok semula automatik).';
                             }
                         } elseif ($fulfilment === 'Dibatalkan') {
                             // Defensive branch: unknown order state. Record the intent
@@ -500,7 +500,7 @@ if (isset($_GET['action'])) {
                     'success' => true,
                     'message' => ($new_status === 'Selesai'
                         ? "Aduan diselesaikan: {$resolution}."
-                        : 'Aduan dikemaskini ke Dalam Semakan.')
+                        : 'Aduan dikemas kini ke Dalam Semakan.')
                         . ($settlement_note ? ' ' . $settlement_note : ''),
                 ]);
             } catch (PDOException $e) {
@@ -876,7 +876,7 @@ if (isset($_GET['action'])) {
                 if (!$pay_rec) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Pembayaran tidak dijumpai']));
+                    die(json_encode(['success' => false, 'message' => 'Pembayaran tidak ditemui']));
                 }
                 $rr = resolve_refund_amount($pdo, $pay_rec);
 
@@ -895,7 +895,7 @@ if (isset($_GET['action'])) {
                 if ($stmt->rowCount() === 0) {
                     $pdo->rollBack();
                     http_response_code(422);
-                    die(json_encode(['success' => false, 'message' => 'Pembayaran tidak dijumpai atau sudah selesai']));
+                    die(json_encode(['success' => false, 'message' => 'Pembayaran tidak ditemui atau sudah selesai']));
                 }
 
                 // Update transaction
@@ -970,7 +970,7 @@ if (isset($_GET['action'])) {
                 if (!$settle) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Pertikaian tidak dijumpai']));
+                    die(json_encode(['success' => false, 'message' => 'Pertikaian tidak ditemui']));
                 }
 
                 if ($settle['settlement_status'] !== 'queued') {
@@ -1041,7 +1041,7 @@ if (isset($_GET['action'])) {
 
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Pulangan RM' . number_format($amount, 2) . ' (' . (($settle['payment_type'] === 'cash') ? 'tunai' : 'manual') . ') ditanda selesai',
+                    'message' => 'Pemulangan wang RM' . number_format($amount, 2) . ' (' . (($settle['payment_type'] === 'cash') ? 'tunai' : 'manual') . ') ditanda selesai',
                     'refund_amount' => $amount,
                 ]);
             } catch (PDOException $e) {
@@ -1083,7 +1083,7 @@ if (isset($_GET['action'])) {
 
             if (!$target) {
                 http_response_code(404);
-                die(json_encode(['success' => false, 'message' => 'Pengguna tidak dijumpai.']));
+                die(json_encode(['success' => false, 'message' => 'Pengguna tidak ditemui.']));
             }
 
             // Prevent deactivating another admin
@@ -1206,7 +1206,7 @@ if (isset($_GET['action'])) {
             $stmt->execute([$target_id, $role]);
             if (!$stmt->fetch()) {
                 http_response_code(404);
-                die(json_encode(['success' => false, 'message' => 'Profil kepercayaan tidak dijumpai.']));
+                die(json_encode(['success' => false, 'message' => 'Profil kepercayaan tidak ditemui.']));
             }
 
             if ($hold === 0) {
@@ -1215,14 +1215,14 @@ if (isset($_GET['action'])) {
                         SET ai_hold = 0, ai_hold_released_by = ?, ai_hold_released_at = CURRENT_TIMESTAMP
                       WHERE user_id = ? AND profile_role = ?'
                 )->execute([$user['user_id'], $target_id, $role]);
-                $msg = 'Tahanan AI dilepaskan — pengguna ini boleh berurus niaga semula.';
+                $msg = 'Sekatan AI dilepaskan — pengguna ini boleh berurus niaga semula.';
             } else {
                 $pdo->prepare(
                     'UPDATE trust_profiles
                         SET ai_hold = 1, ai_hold_released_by = NULL, ai_hold_released_at = NULL
                       WHERE user_id = ? AND profile_role = ?'
                 )->execute([$target_id, $role]);
-                $msg = 'Tahanan AI dikenakan semula — pesanan baharu dihalang.';
+                $msg = 'Sekatan AI dikenakan semula — pesanan baharu dihalang.';
             }
             echo json_encode(['success' => true, 'message' => $msg]);
             exit;
@@ -2192,7 +2192,7 @@ $urgent_disputes = $stmt->fetchAll();
           <table class="tbl">
             <thead>
               <tr>
-                <th>Payment ID</th>
+                <th>ID Pembayaran</th>
                 <th>Transaksi</th>
                 <th>Pembeli</th>
                 <th>Jumlah</th>
@@ -2229,7 +2229,7 @@ $urgent_disputes = $stmt->fetchAll();
             <table class="tbl">
               <thead>
                 <tr>
-                  <th>Dispute ID</th>
+                  <th>ID Aduan</th>
                   <th>Transaksi</th>
                   <th>Pembeli</th>
                   <th>Jumlah</th>
@@ -2274,7 +2274,7 @@ $urgent_disputes = $stmt->fetchAll();
               <tr>
                 <th>ID</th><th>Aduan / Sebab</th><th>Produk</th>
                 <th>Nilai</th><th>Pembeli</th><th>Penjual</th>
-                <th>Tracking</th><th>Status Pulangan</th><th>Status Pulangan Wang</th>
+                <th>Pengesanan</th><th>Status Pulangan</th><th>Status Pulangan Wang</th>
                 <th style="text-align:right">Tindakan</th>
               </tr>
             </thead>
@@ -2291,8 +2291,8 @@ $urgent_disputes = $stmt->fetchAll();
         <div class="card-box" style="margin-top:20px;font-size:12px;color:var(--ink3)">
           <strong>Panduan:</strong>
           <ul style="margin:8px 0 0 18px;line-height:1.7">
-            <li><b>Diterima</b> = admin menanda barang fizikal telah sampai. Seterusnya tekan <b>Sahkan &amp; Pulkinkan</b> untuk lepaskan pulangan wang (rekod akan muncul di tab <b>Pulangan Wang</b>).</li>
-            <li><b>Langgarkan</b> = keluar dari proses pulangan barang dan terus pulangkan wang (contoh: barang rosak semasa penghantaran).</li>
+            <li><b>Diterima</b> = admin menanda barang fizikal telah sampai. Seterusnya tekan <b>Sahkan &amp; Pulangkan</b> untuk lepaskan pulangan wang (rekod akan muncul di tab <b>Pulangan Wang</b>).</li>
+            <li><b>Kecualikan</b> = keluar dari proses pulangan barang dan terus pulangkan wang (contoh: barang rosak semasa penghantaran).</li>
             <li>Rekod hanya disenaraikan apabila status <i>pending</i>, <i>in_transit</i> atau <i>received</i>. Rekod <i>verified</i>/<i>cancelled</i> ditapis keluar.</li>
           </ul>
         </div>
@@ -2457,7 +2457,7 @@ function renderPagination(containerId, currentPage, totalPages, totalCount, onPa
 
   if (totalPages > 1) {
     html += `<div class="pagination-controls">`;
-    html += `<button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''} onclick="${onPageChange}(${currentPage - 1})">‹ Sebelumnya</button>`;
+    html += `<button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''} onclick="${onPageChange}(${currentPage - 1})">‹ Sebelum</button>`;
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage   = Math.min(totalPages, currentPage + 2);
@@ -2774,7 +2774,7 @@ async function loadDisputes(filter = _currentDisputeFilter, btn = null, page = _
         ${!closed
           ? `<button class="btn btn-sm btn-primary"
                onclick="openDisputeModal(${d.dispute_id}, ${d.transaction_id}, ${parseFloat(d.total_amount).toFixed(2)})">
-               Selesaikan / Kemaskini
+               Selesaikan / Kemas Kini
              </button>
              <button class="btn btn-sm btn-info"
                onclick="setDisputeReview(${d.dispute_id})">
@@ -2929,7 +2929,7 @@ async function loadUsers(role = _currentRoleFilter, btn = null, page = _currentU
   if (!data.users.length) {
     tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state">
       <div style="font-size:28px;opacity:.3;margin-bottom:8px">👥</div>
-      <div style="font-weight:500">Tiada pengguna dijumpai</div>
+      <div style="font-weight:500">Tiada pengguna ditemui</div>
     </div></td></tr>`;
     renderPagination('admin-users-pagination', 0, 0, 0, 'goToAdminUsersPage', 'pengguna');
     return;
@@ -3003,12 +3003,12 @@ async function toggleUserStatus(userId, isActive) {
 
   try {
     const data = await api('toggle_user_status', {}, { user_id: userId });
-    showToast(data.message || 'Status akaun dikemaskini.', data.success ? 'success' : 'error');
+    showToast(data.message || 'Status akaun dikemas kini.', data.success ? 'success' : 'error');
     if (data.success) {
       loadUsers(_currentRoleFilter, null, _currentUserPage);
     }
   } catch (error) {
-    showToast('Status akaun tidak dapat dikemaskini. Sila cuba lagi.', 'error');
+    showToast('Status akaun tidak dapat dikemas kini. Sila cuba lagi.', 'error');
   }
 }
 
@@ -3197,14 +3197,14 @@ async function loadTransactions(dummy = '', page = _currentTxnPage) {
       </div>
       <div class="card-box" style="text-align:center">
         <div style="font-size:18px;font-weight:600;color:var(--gold)">RM ${parseFloat(data.summary.online_paid_amount || 0).toFixed(2)}</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:4px">Bayaran Online</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:4px">Bayaran Dalam Talian</div>
       </div>
     `;
     
     if (data.transactions.length === 0) {
       tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
         <div style="font-size:28px;opacity:.3;margin-bottom:8px">📊</div>
-        <div style="font-weight:500">Tiada transaksi dijumpai</div>
+        <div style="font-weight:500">Tiada transaksi ditemui</div>
       </div></td></tr>`;
       renderPagination('admin-transactions-pagination', 0, 0, 0, 'goToTxnPage', 'transaksi');
       return;
@@ -3425,7 +3425,7 @@ function renderManualSettlements(rows) {
     const bClass = queued ? 'badge-gold' : 'badge-green';
     const bLabel = queued ? 'Perlu Selesaikan' : 'Selesai';
     const actions = queued
-      ? `<button class="btn btn-sm btn-success" onclick="completeManualSettlement(${parseInt(r.dispute_id, 10)})">✓ Tanda Diserah</button>`
+      ? `<button class="btn btn-sm btn-success" onclick="completeManualSettlement(${parseInt(r.dispute_id, 10)})">✓ Tandakan Telah Diserahkan</button>`
       : '<span style="font-size:11px;color:var(--ink4)">—</span>';
     const retBadge = String(r.settlement_return_required) === '1'
       ? ' <span class="badge badge-blue">Pulangan barang</span>' : '';
@@ -3450,7 +3450,7 @@ function renderManualSettlements(rows) {
 }
 
 async function completeManualSettlement(dispute_id) {
-  if (!confirm('Sahkan PTU telah menyerahkan pulangan untuk pertikaian #' + dispute_id + '? Tindakan ini menutup settlement.')) return;
+  if (!confirm('Sahkan PTU telah menyerahkan pulangan untuk pertikaian #' + dispute_id + '? Tindakan ini menutup penyelesaian.')) return;
   const data = await api('complete_manual_settlement', {}, {
     dispute_id,
     notes: 'Pulangan diserah kepada pembeli oleh PTU',
@@ -3482,7 +3482,7 @@ async function exportTransactionsCSV() {
     const data = await res.json();
     
     if (!data.success || !data.transactions.length) {
-      showToast('Tiada data untuk diexport', 'error');
+      showToast('Tiada data untuk dieksport', 'error');
       return;
     }
     
@@ -3516,9 +3516,9 @@ async function exportTransactionsCSV() {
     link.download = `trustmart-transactions-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     
-    showToast('CSV berjaya diexport', 'success');
+    showToast('CSV berjaya dieksport', 'success');
   } catch (err) {
-    showToast('Ralat export: ' + err.message, 'error');
+    showToast('Ralat eksport: ' + err.message, 'error');
   }
 }
 
@@ -3574,9 +3574,9 @@ async function loadAiRisks() {
         <td>
           <div style="display:flex;gap:5px;flex-wrap:wrap">
             ${held
-              ? `<button class="btn btn-success btn-sm" onclick="aiSetHold(${r.user_id},'${esc(r.profile_role)}',0)">Lepaskan Tahanan</button>
+              ? `<button class="btn btn-success btn-sm" onclick="aiSetHold(${r.user_id},'${esc(r.profile_role)}',0)">Lepaskan Sekatan</button>
                  <button class="btn btn-danger btn-sm" onclick="aiSuspend(${r.user_id},true)">Gantung Akaun</button>`
-              : `<button class="btn btn-sm" onclick="aiSetHold(${r.user_id},'${esc(r.profile_role)}',1)">Kenakan Tahanan</button>`}
+              : `<button class="btn btn-sm" onclick="aiSetHold(${r.user_id},'${esc(r.profile_role)}',1)">Kenakan Sekatan</button>`}
           </div>
         </td>
       </tr>`;
@@ -3681,8 +3681,8 @@ function renderReturns() {
       : '<span class="badge badge-gray"><span class="badge-dot"></span>Tiada bayaran</span>';
     const acts = [];
     if (canReceive) acts.push('<button class="btn btn-sm" onclick="updateReturnStatus(' + r.return_id + ',\'received\')">Tandakan Diterima</button>');
-    if (canVerify)  acts.push('<button class="btn btn-sm btn-success" onclick="updateReturnStatus(' + r.return_id + ',\'verified\')">Sahkan &amp; Pulkinkan</button>');
-    if (canWaive)   acts.push('<button class="btn btn-sm btn-danger"  onclick="waiveReturn(' + r.return_id + ')">Langgarkan</button>');
+    if (canVerify)  acts.push('<button class="btn btn-sm btn-success" onclick="updateReturnStatus(' + r.return_id + ',\'verified\')">Sahkan &amp; Pulangkan</button>');
+    if (canWaive)   acts.push('<button class="btn btn-sm btn-danger"  onclick="waiveReturn(' + r.return_id + ')">Kecualikan</button>');
     return '<tr>' +
       '<td>#' + r.return_id + '</td>' +
       '<td><div style="font-weight:500">' + esc(r.dispute_reason || '—') + '</div>' +
@@ -3721,7 +3721,7 @@ async function updateReturnStatus(returnId, newStatus) {
 }
 
 async function waiveReturn(returnId) {
-  const reason = prompt('Sebab langgarkan pulangan (wajib):');
+  const reason = prompt('Sebab kecualikan pemulangan barang (wajib):');
   if (!reason) return;
   const fd = new FormData();
   fd.append('return_id', returnId);

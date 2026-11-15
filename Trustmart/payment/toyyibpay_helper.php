@@ -43,20 +43,34 @@ class ToyyibPayHelper {
      * @return array Response with billCode and billpaymentLink
      */
     public function createBill($params) {
+        // ToyyibPay constraints (see API reference):
+        //  - billName: max 30 chars, alphanumeric + space + '_' only.
+        //  - billAmount: in CENTS (100 = RM1.00), NOT ringgit. Sending RM here
+        //    undercharges by 100x and trips the RM1.00 minimum.
+        $bill_name = rtrim(substr(trim(preg_replace('/[^A-Za-z0-9 _]/', '', (string) $params['product_name'])), 0, 30));
+        if ($bill_name === '') {
+            $bill_name = 'TrustMart Order';
+        }
+
+        // ToyyibPay mandates billTo/billEmail/billPhone when billPayorInfo=1.
+        // TrustMart does not collect phone numbers, so when none is supplied we
+        // create an open bill (billPayorInfo=0) rather than fabricate contact data.
+        $buyer_phone = trim((string) ($params['buyer_phone'] ?? ''));
+
         $bill_data = [
             'userSecretKey' => $this->secret_key,
             'categoryCode' => $this->category_code,
-            'billName' => substr($params['product_name'], 0, 100),
-            'billDescription' => 'TrustMart Order #' . $params['transaction_id'],
+            'billName' => $bill_name,
+            'billDescription' => 'TrustMart Order ' . $params['transaction_id'],
             'billPriceSetting' => 1, // Fixed price
-            'billPayorInfo' => 1, // Collect payer info
-            'billAmount' => number_format($params['amount'], 2, '.', ''),
+            'billPayorInfo' => $buyer_phone !== '' ? 1 : 0, // require payer info only when a phone exists
+            'billAmount' => (int) round($params['amount'] * 100), // RM -> cents
             'billReturnUrl' => PAYMENT_BASE_URL . '/payment/return.php?ref=' . urlencode($params['payment_reference']),
             'billCallbackUrl' => PAYMENT_BASE_URL . '/payment/callback.php',
             'billExternalReferenceNo' => $params['payment_reference'],
             'billTo' => $params['buyer_name'],
             'billEmail' => $params['buyer_email'],
-            'billPhone' => $params['buyer_phone'] ?? '',
+            'billPhone' => $buyer_phone,
             'billSplitPayment' => 0,
             'billPaymentChannel' => '0', // FPX only (0), Credit card (1), Both (2)
             'billContentEmail' => 'Thank you for your payment!',
@@ -83,7 +97,11 @@ class ToyyibPayHelper {
      */
     public function getBillTransactions($billCode) {
         $data = [
-            'billCode' => $billCode
+            'billCode' => $billCode,
+            // Include our secret key so only bills owned by THIS account are
+            // returned (a billcode is public; without the key anyone could read
+            // status). Also unlocks full transaction details.
+            'userSecretKey' => $this->secret_key
         ];
         
         return $this->makeRequest('/index.php/api/getBillTransactions', $data);

@@ -232,13 +232,13 @@
       const toggle = document.createElement('button');
       toggle.type = 'button';
       toggle.className = 'tm-password-toggle';
-      toggle.textContent = 'Tunjuk';
+      toggle.textContent = 'Tunjukkan';
       toggle.setAttribute('aria-label', 'Tunjukkan kata laluan');
       toggle.setAttribute('aria-pressed', 'false');
       toggle.addEventListener('click', () => {
         const showing = input.type === 'text';
         input.type = showing ? 'password' : 'text';
-        toggle.textContent = showing ? 'Tunjuk' : 'Sembunyi';
+        toggle.textContent = showing ? 'Tunjukkan' : 'Sembunyikan';
         toggle.setAttribute('aria-label', showing ? 'Tunjukkan kata laluan' : 'Sembunyikan kata laluan');
         toggle.setAttribute('aria-pressed', String(!showing));
         input.focus({ preventScroll: true });

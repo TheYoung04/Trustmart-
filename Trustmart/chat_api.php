@@ -134,7 +134,7 @@ switch ($action) {
             $contact = $stmt->fetch();
             if (!$contact) {
                 http_response_code(404);
-                die(json_encode(['success' => false, 'message' => 'Pengguna tidak dijumpai.']));
+                die(json_encode(['success' => false, 'message' => 'Pengguna tidak ditemui.']));
             }
             $display = trust_display_from_row($contact);
             $contact['trust_display']       = $display['label'];
@@ -263,7 +263,7 @@ switch ($action) {
             $receiver = $chk->fetch();
             if (!$receiver) {
                 http_response_code(404);
-                die(json_encode(['success' => false, 'message' => 'Penerima tidak dijumpai.']));
+                die(json_encode(['success' => false, 'message' => 'Penerima tidak ditemui.']));
             }
             if (!(int) $receiver['is_active']) {
                 http_response_code(403);
@@ -302,7 +302,7 @@ switch ($action) {
                     http_response_code(422);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Konteks produk tidak sepadan dengan peserta sembang.',
+                        'message' => 'Produk yang dirujuk tidak sepadan dengan sembang ini.',
                     ]));
                 }
             }

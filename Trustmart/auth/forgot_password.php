@@ -67,12 +67,12 @@ $reset_link = "{$base_path}/auth/reset_password.php?token={$token}";
 
 // Primary delivery channel: email the reset link to the account's verified
 // address. The token is NEVER returned to remote/anonymous callers.
-$mail_body = "Hi {$user['full_name']},\n\n"
-    . "We received a request to reset your TrustMart password.\n"
-    . "Open the link below within 1 hour to choose a new password:\n\n"
+$mail_body = "Hai {$user['full_name']},\n\n"
+    . "Kami menerima permintaan untuk menetapkan semula kata laluan TrustMart anda.\n"
+    . "Buka pautan di bawah dalam tempoh 1 jam untuk memilih kata laluan baharu:\n\n"
     . trustmart_absolute_link($reset_link) . "\n\n"
-    . "If you did not request this, you can safely ignore this email.\n";
-trustmart_send_email($email, 'TrustMart - Tetapan Semula Kata Laluan', $mail_body);
+    . "Jika anda tidak membuat permintaan ini, abaikan sahaja emel ini.\n";
+trustmart_send_email($email, 'TrustMart - Penetapan Semula Kata Laluan', $mail_body);
 
 $response = [
     'success' => true,

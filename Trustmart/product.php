@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])
         if (ai_trust_seller_hold($pdo, (int) $p['seller_id'], 'penjual')) {
             $pdo->rollBack();
             http_response_code(403);
-            die(json_encode(['success' => false, 'message' => 'Penjual ini sedang dalam siasatan PTU (Lapisan AI). Pesanan baharu dihalang sementara — pilih penjual lain atau cuba kemudian.']));
+            die(json_encode(['success' => false, 'message' => 'Penjual ini sedang disiasat oleh pentadbir (Lapisan AI). Pesanan baharu ditahan sementara — pilih penjual lain atau cuba lagi kemudian.']));
         }
 
         $stock_stmt = $pdo->prepare(
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])
         if ($stock_stmt->rowCount() !== 1) {
             $pdo->rollBack();
             http_response_code(409);
-            die(json_encode(['success' => false, 'message' => 'Stok baru sahaja berubah. Sila cuba lagi.']));
+            die(json_encode(['success' => false, 'message' => 'Stok telah berubah sebentar tadi. Sila cuba lagi.']));
         }
 
         $total_amount = $p['price'] * $qty;
@@ -307,7 +307,7 @@ require_once __DIR__ . '/includes/header.php';
         <a href="<?= htmlspecialchars($dashboard_url) ?>"
            style="display:flex;align-items:center;gap:8px;padding:7px 0;
                   font-size:12px;color:rgba(255,255,255,.65);text-decoration:none">
-          ← Kembali ke Dashboard
+          ← Kembali ke Papan Pemuka
         </a>
       </div>
     </div>
@@ -428,7 +428,7 @@ require_once __DIR__ . '/includes/header.php';
                      class="payment-type-option">
                 <input type="radio" name="payment_type" value="online" style="margin-right:8px">
                 <strong style="font-size:13px">💳 Bayar Dalam Talian</strong>
-                <div style="font-size:11px;color:var(--ink3);margin-top:4px">FPX / E-Wallet (Selamat)</div>
+                <div style="font-size:11px;color:var(--ink3);margin-top:4px">FPX / Dompet Digital (Selamat)</div>
               </label>
             </div>
           </div>
@@ -505,7 +505,7 @@ require_once __DIR__ . '/includes/header.php';
       <div class="empty-state">
         <div style="font-size:32px;opacity:.3;margin-bottom:10px">💬</div>
         <div style="font-weight:500">Belum ada ulasan</div>
-        <div style="font-size:12px;margin-top:4px">Jadilah yang pertama memberi ulasan</div>
+        <div style="font-size:12px;margin-top:4px">Jadilah orang pertama memberikan ulasan</div>
       </div>
       <?php else: ?>
       <?php foreach ($reviews as $r): ?>

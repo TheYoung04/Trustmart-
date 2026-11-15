@@ -195,7 +195,7 @@ if (!function_exists('notify_topbar_html')) {
         $out  = '';
 
         $out .= notify_pill_html((int) $notify['action'], $prefix . '-action',
-                                 'pesanan perlu tindakan anda', $tab, 'red');
+                                 'Pesanan menunggu tindakan anda', $tab, 'red');
 
         if (!$is_seller && (int) $notify['reviews'] > 0) {
             $out .= notify_pill_html((int) $notify['reviews'], $prefix . '-review',
@@ -203,7 +203,7 @@ if (!function_exists('notify_topbar_html')) {
         }
         if ((int) $notify['disputes'] > 0) {
             $out .= notify_pill_html((int) $notify['disputes'], $prefix . '-dispute',
-                                     'aduan disemak PTU', $tab, 'blue');
+                                     'Aduan disemak oleh pentadbir', $tab, 'blue');
         }
 
         // Mirrors the admin console's "Sistem beroperasi normal" slot.

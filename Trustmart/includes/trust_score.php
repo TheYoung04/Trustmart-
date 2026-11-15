@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-const TRUST_FORMULA_VERSION = 'TM-TRUST-2.0';
+const TRUST_FORMULA_VERSION = 'TM-TRUST-3.0';
 const TRUST_PROFILE_ROLES = ['pembeli', 'penjual'];
 
 /**
@@ -177,7 +177,7 @@ function trust_confidence_class(array $profile): string
 function trust_summary_text(array $profile): string
 {
     if (!trust_has_evidence($profile)) {
-        return 'Profil baharu — belum cukup sejarah transaksi';
+        return 'Profil baharu — sejarah transaksi belum mencukupi';
     }
 
     return sprintf(
@@ -189,24 +189,25 @@ function trust_summary_text(array $profile): string
 }
 
 /**
- * Plain-language reading of the two numbers a profile carries.
+ * Plain-language reading of the v3 (TikTok-style) score.
  *
- * The modal shows a headline score AND a quality score, which reads as a
- * contradiction unless someone says out loud that one is "how good your record
- * looks" and the other is that figure discounted for "how much proof exists".
- * These are the live numbers in sentences, replacing the formula line
- * (skor asas × keyakinan) that nobody could parse.
+ * v3 builds the score from operational pillars (fulfilment / service /
+ * quality / identity) over a rolling 90-day window, with NO confidence
+ * discount — confidence is shown as information only. The copy therefore
+ * narrates the pillars and the window instead of the old
+ * "skor asas × keyakinan" formula that crushed small sellers.
  *
  * @param string $counterparty who this user deals with: 'penjual' on a buyer
  *                             profile, 'pembeli' on a seller profile.
  */
 function trust_explained_html(array $profile, string $counterparty = 'penjual'): string
 {
-    $raw    = (float) ($profile['raw_score'] ?? 0);
     $score  = (float) ($profile['score'] ?? 0);
     $conf   = (float) ($profile['confidence'] ?? 0);
+    $label  = (string) ($profile['confidence_label'] ?? 'Tiada');
     $partners = (int) ($profile['distinct_counterparties'] ?? 0);
     $cp = $counterparty === 'pembeli' ? 'pembeli' : 'penjual';
+    $is_buyer = (($profile['profile_role'] ?? '') === 'pembeli');
 
     if (!trust_has_evidence($profile)) {
         return '<p style="margin-bottom:14px">'
@@ -215,24 +216,22 @@ function trust_explained_html(array $profile, string $counterparty = 'penjual'):
             . ' selesai. Label <b>Baharu</b> itu normal, bukan penalti.</p>';
     }
 
-    $quality = '<b>Kualiti rekod anda: ' . number_format($raw, 1) . '/100.</b>'
-        . ' Angka ini dinilai daripada pesanan yang betul-betul selesai, ulasan'
-        . ' yang diberi, dan tiada rekod aduan terhadap anda.';
+    $pillars = $is_buyer
+        ? 'penyelesaian pesanan (70 mata), keselamatan pertikaian (25 mata) dan identiti UTHM aktif (5 mata)'
+        : 'pesanan yang selesai (40 mata), respons pantas (30 mata), kualiti & keselamatan (25 mata) dan pengesahan PTU (5 mata)';
 
-    if ($conf >= 99.5) {
-        $proof = 'Anda sudah berniaga dengan <b>' . $partners . ' ' . $cp . '</b> berbeza,'
-            . ' jadi bukti cukup untuk memaparkan skor penuh: <b>'
-            . number_format($score, 1) . '/100</b>.';
-    } else {
-        $proof = 'Tetapi setakat ini anda baru berniaga dengan <b>' . $partners . ' ' . $cp . '</b>'
-            . ' berbeza. Bukti daripada seorang dua belum boleh dipercayai sepenuhnya,'
-            . ' jadi skor anda dipaparkan sebagai <b>' . number_format($score, 1) . '/100</b>'
-            . ' (keyakinan ' . number_format($conf, 0) . '%).';
-    }
+    $quality = '<b>Kualiti rekod anda: ' . number_format($score, 1) . '/100.</b>'
+        . ' Seperti platform e-commerce besar, skor dibina daripada '
+        . $pillars . ' — dikira daripada urus niaga <b>90 hari terkini</b>'
+        . ' (atau semua rekod jika tiada yang baharu).';
 
-    $howto = '<span style="color:var(--ink3)">Cara menaikkannya: selesaikan urus niaga'
-        . ' dengan lebih ramai ' . $cp . ' yang <b>berbeza</b> — bukan lebih banyak'
-        . ' pesanan daripada orang yang sama (setiap satu hanya mengira 3 urus niaga).</span>';
+    $proof = 'Anda sudah berniaga dengan <b>' . $partners . ' ' . $cp . ' yang berbeza</b>.'
+        . ' Keyakinan bukti: <b>' . $label . ' (' . number_format($conf, 0) . '%)</b>'
+        . ' — ini maklumat tambahan tentang bilangan bukti, <b>bukan potongan skor</b>.';
+
+    $howto = '<span style="color:var(--ink3)">Cara menaikkannya: selesaikan pesanan'
+        . ' dengan lebih ramai ' . $cp . ' yang <b>berbeza</b>, balas dengan pantas,'
+        . ' dan elakkan aduan yang diputuskan memihak kepada pihak satu lagi.</span>';
 
     return '<p style="margin-bottom:6px">' . $quality . '</p>'
         . '<p style="margin-bottom:6px">' . $proof . '</p>'
@@ -253,7 +252,7 @@ function trust_components_html(array $profile): string
             . 'border-radius:var(--r);font-size:12px;color:var(--ink3);line-height:1.6">'
             . 'Pecahan skor akan diaktifkan selepas transaksi pertama anda selesai.'
             . '<br><span style="font-size:11px;color:var(--ink4)">Penilaian bermula daripada '
-            . 'nilai prior Bayesian dan hanya dikira setelah terdapat bukti sebenar '
+            . 'nilai asas Bayesian dan hanya dikira setelah terdapat bukti sebenar '
             . '(transaksi, ulasan atau aduan).</span></div>';
     }
 

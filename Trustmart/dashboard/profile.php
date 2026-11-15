@@ -38,14 +38,14 @@ if (isset($_GET['action'])) {
 
             if (mb_strlen($name) > 100) {
                 http_response_code(422);
-                die(json_encode(['success' => false, 'message' => 'Nama terlalu panjang (max 100 aksara).']));
+                die(json_encode(['success' => false, 'message' => 'Nama terlalu panjang (maksimum 100 aksara).']));
             }
 
             if ($has_fac) {
                 // The same pairing registration enforces: PTU is a centre that
                 // employs staff, so a student account cannot claim it. A value
                 // outside the list keeps what is stored rather than wiping it.
-                $allowed_faculties = ['FKEE','FKMP','FSKTM','FKAAB','FPTP','FPTV',''];
+                $allowed_faculties = ['FKEE','FKMP','FSKTM','FKAAB','FPTP','FPTV','PPD',''];
                 if (($user['user_type'] ?? '') === 'staf') {
                     $allowed_faculties[] = 'PTU';
                 }
@@ -63,7 +63,7 @@ if (isset($_GET['action'])) {
             }
 
             refresh_session_user($pdo);
-            echo json_encode(['success' => true, 'message' => 'Profil berjaya dikemaskini.']);
+            echo json_encode(['success' => true, 'message' => 'Profil berjaya dikemas kini.']);
             exit;
 
         // ── Change password ──────────────────────────────────
@@ -165,7 +165,7 @@ $dashboard_url = match($user['role']) {
 // ── Mode-aware return link ────────────────────────────────────
 // A penjual account can browse either side of the app: seller.php
 // (Mod Penjual) or buyer.php (Mod Pembeli). If they open Profil Saya
-// from Mod Pembeli, "Kembali ke Dashboard" must take them back to
+// from Mod Pembeli, "Kembali ke Papan Pemuka" must take them back to
 // the SAME mode they came from — not silently drop them into
 // Mod Penjual. Honour the ?mode= hint, falling back to the Referer
 // for old links / bookmarks.
@@ -326,7 +326,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
            viewBox="0 0 24 24">
         <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
-      </svg>Kembali ke Dashboard
+      </svg>Kembali ke Papan Pemuka
     </a>
     <div class="nav-item active">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -409,7 +409,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
           <div class="info-val"><?= ($user['user_type'] ?? '') === 'staf' ? 'Staf UTHM' : 'Pelajar UTHM' ?></div>
         </div>
         <div class="info-row">
-          <div class="info-label"><?= ($user['user_type'] ?? '') === 'staf' ? 'No. Pegawai' : 'No. Matrik' ?></div>
+          <div class="info-label"><?= ($user['user_type'] ?? '') === 'staf' ? 'No. Staf' : 'No. Matrik' ?></div>
           <div class="info-val"><?= htmlspecialchars($user['ident_no']) ?></div>
         </div>
         <div class="info-row">
@@ -464,7 +464,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
         </ol>
         <div style="display:flex;justify-content:flex-end">
           <button class="btn btn-primary" id="become-seller-btn" onclick="requestSellerRole()">
-            <?= $user['role'] === 'pembeli' ? 'Mahu Jadi Penjual' : 'Hantar Permohonan Semula' ?>
+            <?= $user['role'] === 'pembeli' ? 'Mohon Menjadi Penjual' : 'Hantar Permohonan Semula' ?>
           </button>
         </div>
       </div>
@@ -472,7 +472,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
 
       <!-- EDIT PROFILE -->
       <div class="card-box">
-        <div class="card-title">Kemaskini Profil</div>
+        <div class="card-title">Kemas Kini Profil</div>
         <?php
         $prof_is_staff = ($user['user_type'] ?? '') === 'staf';
         $prof_fac_label = $prof_is_staff ? 'Fakulti / Pusat' : 'Fakulti';
@@ -496,7 +496,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
             <option value=""><?= $prof_fac_pick ?></option>
             <?php
             // PTU is offered to staff accounts only — matching the register form.
-            $faculties = ['FKEE','FKMP','FSKTM','FKAAB','FPTP','FPTV'];
+            $faculties = ['FKEE','FKMP','FSKTM','FKAAB','FPTP','FPTV','PPD'];
             if ($prof_is_staff) $faculties[] = 'PTU';
             // Show the stored faculty even if it is not in the list, so
             // editing the name never drops an unlisted value.
@@ -541,7 +541,7 @@ $buyer_profile   = trust_profile($pdo, (int) $user['user_id'], 'pembeli');
         <div class="form-group">
           <label class="form-label">Sahkan Kata Laluan Baharu</label>
           <input class="form-input" type="password" id="pw-confirm"
-                 placeholder="Ulang kata laluan baharu">
+                 placeholder="Taip semula kata laluan baharu">
         </div>
 
         <div style="margin-top:20px;display:flex;justify-content:flex-end">
@@ -611,7 +611,7 @@ async function requestSellerRole() {
     const data = await res.json();
     showToast(data.message, data.success ? 'success' : 'error');
     if (data.success) setTimeout(() => location.href = data.redirect, 1200);
-    else { btn.disabled = false; btn.textContent = 'Mahu Jadi Penjual'; }
+    else { btn.disabled = false; btn.textContent = 'Mohon Menjadi Penjual'; }
   } catch (e) {
     showToast('Ralat rangkaian.', 'error');
     btn.disabled = false;

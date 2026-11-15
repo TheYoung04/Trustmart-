@@ -4,9 +4,10 @@
  *
  * The shipped catalogue covers only 3 of the 6 categories (Elektronik, Buku,
  * Pakaian), so the grid looked repetitive and the Makanan / Perkhidmatan /
- * Lain-lain filter chips returned nothing. This adds 11 products spread over
+ * Lain-lain filter chips returned nothing. This adds 20 products spread over
  * all six categories and over several verified sellers, each with a photo, and
- * fills in the two products that had no image.
+ * fills in the two products that had no image. The last nine (marked "Tambahan")
+ * deepen the thin Pakaian / Makanan / Perkhidmatan / Lain-lain categories.
  *
  * Deliberately NOT touched: trust_profiles, transactions, reviews, and the AI
  * columns — the seeded rows are plain catalogue data. Earbuds are given to
@@ -84,6 +85,44 @@ $products = [
      'name' => 'Set Alatulis Art (12 Gradasi)',
      'desc' => 'Set alatulis grafit 12 gradasi berbeza bersama berus dan pemadam. Sesuai untuk kelas reka bentuk dan lukisan.',
      'price' => 25.00, 'stock' => 7, 'sold' => 3, 'img' => 'set_alatulis_art.png'],
+
+    // ── Tambahan demo (9 produk, memperdalam kategori nipis) ──
+    ['seller' => 16, 'cat' => 'Elektronik', 'days' => 3,
+     'name' => 'Webcam HD 1080p dengan Mikrofon',
+     'desc' => 'Webcam 1080p dengan mikrofon terbina dalam dan klip mount tripod. Sesuai untuk kelas dalam talian dan mesyuarat. Keadaan: baharu.',
+     'price' => 89.00, 'stock' => 5, 'sold' => 2, 'img' => 'webcam_hd.png'],
+    ['seller' => 4,  'cat' => 'Buku', 'days' => 10,
+     'name' => 'Buku Kimia Tingkatan 4 KSSM',
+     'desc' => 'Buku teks Kimia Tingkatan 4 KSSM, kulit lembut dengan grafik molekul. Keadaan baik, halaman lengkap, sedikit catatan pensel.',
+     'price' => 20.00, 'stock' => 3, 'sold' => 1, 'img' => 'buku_kimia_t4.png'],
+    ['seller' => 5,  'cat' => 'Pakaian', 'days' => 5,
+     'name' => 'Jersey Sukan Universiti (Saiz M)',
+     'desc' => 'Jersey sukan poliester biru-putih, saiz M, ringan dan cepat kering. Sesuai untuk latihan dan acara kolej. Boleh cuba di Kolej 13.',
+     'price' => 45.00, 'stock' => 6, 'sold' => 2, 'img' => 'jersey_sukan.png'],
+    ['seller' => 16, 'cat' => 'Pakaian', 'days' => 4,
+     'name' => 'T-Shirt Kapas Putih (Saiz L)',
+     'desc' => 'T-shirt kapas putih leher bulat, saiz L, tanpa logo. Selesa dipakai harian, sudah dibasuh bersih. Keadaan: seperti baharu.',
+     'price' => 25.00, 'stock' => 8, 'sold' => 3, 'img' => 'tshirt_putih.png'],
+    ['seller' => 5,  'cat' => 'Makanan', 'days' => 1,
+     'name' => 'Kek Batik Homemade (Satu Slice)',
+     'desc' => 'Kek batik coklat lapis biskut dibuat sendiri, satu slice besar. Disimpan sejuk; siap ambil di kafe FKEE setiap petang.',
+     'price' => 6.00, 'stock' => 15, 'sold' => 9, 'img' => 'kek_batik.png'],
+    ['seller' => 4,  'cat' => 'Makanan', 'days' => 2,
+     'name' => 'Lemon Madu Botol 500ml',
+     'desc' => 'Air lemon madu dibancuh segar dalam botol 500ml, kurang manis. Disimpan sejuk, tahan dua hari. Jumpa di lobi Kolej 13.',
+     'price' => 8.50, 'stock' => 18, 'sold' => 6, 'img' => 'lemon_madu.png'],
+    ['seller' => 15, 'cat' => 'Perkhidmatan', 'days' => 6,
+     'name' => 'Servis Fotografi Graduan (1 Jam)',
+     'desc' => 'Sesi fotografi graduan selama satu jam di sekitar kampus, termasuk 20 gambar suntingan digital. Tempahan awal dua hari.',
+     'price' => 80.00, 'stock' => 8, 'sold' => 3, 'img' => 'servis_foto_graduan.png'],
+    ['seller' => 2,  'cat' => 'Perkhidmatan', 'days' => 7,
+     'name' => 'Servis Baiki & Format Laptop',
+     'desc' => 'Servis pemeriksaan, pembersihan dan format semula laptop termasuk pemasangan semula perisian asas. Siap dalam 1-2 hari.',
+     'price' => 50.00, 'stock' => 10, 'sold' => 5, 'img' => 'servis_baiki_laptop.png'],
+    ['seller' => 15, 'cat' => 'Lain-lain', 'days' => 8,
+     'name' => 'Beg Sandang Backpack 25L',
+     'desc' => 'Beg sandang 25 liter kelabu gelap dengan tali berpad dan poket hadapan. Muat laptop 15 inci, sesuai ke kelas dan gim.',
+     'price' => 60.00, 'stock' => 7, 'sold' => 2, 'img' => 'beg_backpack.png'],
 ];
 
 // Products already in the catalogue that simply have no photo yet.

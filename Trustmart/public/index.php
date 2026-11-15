@@ -207,7 +207,7 @@ $redirect_to = safe_login_redirect((string)($_GET['redirect'] ?? ''));
 <main class="login-right" id="main-content">
   <div class="eyebrow">Komuniti UTHM</div>
   <h1 class="panel-title">Selamat Kembali</h1>
-  <p class="panel-sub">Gunakan akaun UTHM anda untuk meneruskan.</p>
+  <p class="panel-sub">Gunakan akaun UTHM anda untuk log masuk.</p>
 
   <div class="tabs" role="tablist" aria-label="Log masuk atau daftar">
     <button type="button" class="tab active" id="tab-login-btn" role="tab" aria-selected="true" aria-controls="form-login">Log Masuk</button>
@@ -230,7 +230,7 @@ $redirect_to = safe_login_redirect((string)($_GET['redirect'] ?? ''));
     </div>
     <div class="forgot"><button type="button" id="forgot-open">Lupa kata laluan?</button></div>
     <button type="submit" class="btn-submit" id="login-btn">Log Masuk <span aria-hidden="true">→</span></button>
-    <p class="form-note">Emel mestilah berakhir dengan @student.uthm.edu.my atau @uthm.edu.my</p>
+    <p class="form-note">Emel mestilah berakhiran dengan @student.uthm.edu.my atau @uthm.edu.my</p>
   </form>
 
   <form id="form-register" hidden novalidate>
@@ -267,7 +267,7 @@ $redirect_to = safe_login_redirect((string)($_GET['redirect'] ?? ''));
              placeholder="cth. DI240099" autocomplete="username" maxlength="20" required>
       <input class="form-input" id="rg-staff" name="staff_no" type="text"
              placeholder="cth. PTU-1234" autocomplete="off" maxlength="30" hidden required>
-      <div class="form-hint" id="rg-ident-hint">Format: 2 huruf + 6–7 nombor, cth. DI240088.</div>
+      <div class="form-hint" id="rg-ident-hint">Format: 2 huruf + 6–7 digit, cth. DI240088.</div>
     </div>
     <div class="form-group">
       <label class="form-label" for="rg-faculty" id="rg-faculty-label">Fakulti</label>
@@ -275,6 +275,9 @@ $redirect_to = safe_login_redirect((string)($_GET['redirect'] ?? ''));
         <option value="">Pilih Fakulti</option>
         <option>FKEE</option><option>FKMP</option><option>FSKTM</option>
         <option>FKAAB</option><option>FPTP</option><option>FPTV</option>
+        <!-- PPD (Pusat Pengajian Diploma) hosts diploma students, so it is a
+             normal option for everyone, unlike the staff-only PTU centre. -->
+        <option>PPD</option>
         <!-- PTU is a centre, not a faculty: offered to staff accounts only. -->
         <option value="PTU" disabled>PTU</option>
       </select>
@@ -425,7 +428,7 @@ loginForm.addEventListener('submit', async (event) => {
     });
     const data = await parseResponse(response);
     if (!data.success) {
-      const attempts = data.remaining !== undefined && data.remaining <= 2 ? ` (${data.remaining} percubaan tinggal)` : '';
+      const attempts = data.remaining !== undefined && data.remaining <= 2 ? ` (${data.remaining} percubaan lagi)` : '';
       showError((data.message || 'Log masuk tidak berjaya.') + attempts);
       return;
     }
@@ -463,11 +466,11 @@ function applyAccountType() {
   // submission that can fail on a field the user cannot see or correct.
   matricIn.required = !isStaff;
   staffIn.required  = isStaff;
-  identLabel.textContent = isStaff ? 'No. Pegawai' : 'No. Matrik';
+  identLabel.textContent = isStaff ? 'No. Staf' : 'No. Matrik';
   identLabel.htmlFor     = isStaff ? 'rg-staff' : 'rg-matrik';
   identHint.textContent  = isStaff
     ? 'No. pegawai seperti yang tertera pada kad staf UTHM.'
-    : 'Format: 2 huruf + 6–7 nombor, cth. DI240088.';
+    : 'Format: 2 huruf + 6–7 digit, cth. DI240088.';
   facLabel.textContent   = isStaff ? 'Fakulti / Pusat' : 'Fakulti';
   facPtu.disabled        = !isStaff;
   if (isStaff) {
@@ -511,7 +514,7 @@ registerForm.addEventListener('submit', async (event) => {
     return;
   }
   if (values.password !== confirmation) {
-    showError('Kata laluan tidak sepadan. Sila cuba semula.');
+    showError('Kata laluan tidak sepadan. Sila cuba lagi.');
     return;
   }
   if (values.password.length < 8 || !/[A-Za-z]/.test(values.password) || !/[0-9]/.test(values.password)) {

@@ -148,7 +148,7 @@ if ($token !== '') {
       <p class="text"><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
     
-    <a href="../public/index.php" class="btn">Pergi ke Log Masuk →</a>
+    <a href="../public/index.php" class="btn">Ke Log Masuk →</a>
   </div>
 </body>
 </html>

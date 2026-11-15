@@ -20,28 +20,39 @@ if (!file_exists(dirname($log_file))) {
 // FILTER_SANITIZE_STRING (removed in PHP 8.2) and rejects malformed
 // identifiers early. Signature verification is HMAC, and every DB read
 // below uses prepared statements.
+// ToyyibPay's real webhook posts: refno (gateway reference), status
+// (1=success / 2=pending / 3=fail), billcode, order_id (OUR payment_reference,
+// set via billExternalReferenceNo), amount and hash. The legacy HMAC path used
+// refno + status_id + signature, so read both spellings and normalise.
 $refno          = payment_input('refno',          64, '/^[A-Za-z0-9_\-]+$/');
-$status         = payment_input('status_id',      16, '/^[A-Za-z0-9_]+$/');
+$order_id       = payment_input('order_id',       64, '/^[A-Za-z0-9_\-]+$/');
+$status         = payment_input('status',         16, '/^[A-Za-z0-9_]+$/');
+$status_id      = payment_input('status_id',      16, '/^[A-Za-z0-9_]+$/');
 $billcode       = payment_input('billcode',       64, '/^[A-Za-z0-9_\-]+$/');
 $amount         = payment_input('amount',         16, '/^\d+(\.\d{1,2})?$/');
 $transaction_id = payment_input('transaction_id', 64, '/^[A-Za-z0-9_\-]+$/');
 $signature      = payment_input('signature',     128, '/^[a-fA-F0-9]+$/');
 
+// Our internal reference is order_id for ToyyibPay, refno for the legacy
+// simulator path; status is 'status' (ToyyibPay) or 'status_id' (legacy).
+$our_ref    = ($order_id !== null && $order_id !== '') ? $order_id : $refno;
+$pay_status = ($status   !== null && $status   !== '') ? $status   : $status_id;
+
 // Validate required parameters
-if (empty($refno) || empty($status)) {
+if (empty($our_ref) || empty($pay_status)) {
     http_response_code(400);
     exit('Invalid callback parameters');
 }
 
-// Verify signature for simulation gateway (non-ToyyibPay payments)
-// Note: We need to fetch payment first to check payment_method and amount
+// Fetch the payment by OUR reference to check method, amount and the bill
+// code we stored when the bill was created.
 $stmt = $pdo->prepare("
-    SELECT payment_method, amount
+    SELECT payment_method, amount, gateway_response
     FROM payments
     WHERE payment_reference = ?
     LIMIT 1
 ");
-$stmt->execute([$refno]);
+$stmt->execute([$our_ref]);
 $payment_check = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$payment_check) {
@@ -57,7 +68,7 @@ if ($payment_check['payment_method'] !== 'toyyibpay') {
     }
     
     // Verify the signature matches
-    if (!verify_payment_signature($refno, $status, $payment_check['amount'], $signature)) {
+    if (!verify_payment_signature($our_ref, $pay_status, $payment_check['amount'], $signature)) {
         http_response_code(403);
         exit('Invalid signature - callback authentication failed');
     }
@@ -65,6 +76,17 @@ if ($payment_check['payment_method'] !== 'toyyibpay') {
 
 // Verify payment with ToyyibPay if using their gateway
 if ($payment_check['payment_method'] === 'toyyibpay' && TOYYIBPAY_ENABLED) {
+    // Bind the callback to the bill WE created for this payment. Without this
+    // a forged billcode (some other already-paid bill) could authorise this
+    // order, because verifyPayment() trusts the billcode in the request. Check
+    // both keys so a retry (gateway_response now holds the raw POST) still matches.
+    $stored = json_decode((string) ($payment_check['gateway_response'] ?? ''), true);
+    $expected_billcode = is_array($stored) ? (string) ($stored['billCode'] ?? $stored['billcode'] ?? '') : '';
+    if ($expected_billcode === '' || !hash_equals($expected_billcode, (string) $billcode)) {
+        http_response_code(400);
+        exit('Bill code mismatch');
+    }
+
     try {
         require_once __DIR__ . '/toyyibpay_helper.php';
         
@@ -91,8 +113,8 @@ if ($payment_check['payment_method'] === 'toyyibpay' && TOYYIBPAY_ENABLED) {
 // notification can never downgrade an already-paid payment.
 $result = apply_payment_gateway_result(
     $pdo,
-    $refno,
-    ($status === '1' || $status === 'success'),
+    $our_ref,
+    ($pay_status === '1' || $pay_status === 'success'),
     json_encode($_POST)
 );
 

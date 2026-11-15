@@ -37,7 +37,7 @@ if (isset($_GET['action'])) {
         case 'confirm_cash_payment':
             $txn_id = (int)($_POST['transaction_id'] ?? 0);
             $amount_received = (float)($_POST['amount_received'] ?? 0);
-            $payment_method_detail = trim($_POST['payment_method_detail'] ?? 'Hand-to-hand');
+            $payment_method_detail = trim($_POST['payment_method_detail'] ?? 'Serah tangan');
             $seller_notes = trim($_POST['seller_notes'] ?? '');
             
             try {
@@ -56,7 +56,7 @@ if (isset($_GET['action'])) {
                 if (!$txn) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Pesanan tidak dijumpai']));
+                    die(json_encode(['success' => false, 'message' => 'Pesanan tidak ditemui']));
                 }
                 
                 if ($txn['payment_type'] !== 'cash') {
@@ -203,7 +203,7 @@ if (isset($_GET['action'])) {
         case 'edit_product':
             if ($_SESSION['user']['verification_status'] !== 'Disahkan') {
                 http_response_code(403);
-                die(json_encode(['success' => false, 'message' => 'Akaun anda belum disahkan oleh PTU untuk mengemaskini produk.']));
+                die(json_encode(['success' => false, 'message' => 'Akaun anda belum disahkan oleh PTU untuk mengemas kini produk.']));
             }
             $product_id  = (int)   ($_POST['product_id']   ?? 0);
             $name        = trim($_POST['name']             ?? '');
@@ -226,7 +226,7 @@ if (isset($_GET['action'])) {
                 http_response_code(404);
                 die(json_encode([
                     'success' => false,
-                    'message' => 'Produk tidak dijumpai.',
+                    'message' => 'Produk tidak ditemui.',
                 ]));
             }
 
@@ -293,7 +293,7 @@ if (isset($_GET['action'])) {
 
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Produk berjaya dikemaskini.',
+                    'message' => 'Produk berjaya dikemas kini.',
                 ]);
             } catch (PDOException $e) {
                 if ($staged_image_path) {
@@ -332,7 +332,7 @@ if (isset($_GET['action'])) {
                     http_response_code(404);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Produk tidak dijumpai.',
+                        'message' => 'Produk tidak ditemui.',
                     ]));
                 }
 
@@ -403,7 +403,7 @@ if (isset($_GET['action'])) {
                     http_response_code(404);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Pesanan tidak dijumpai.',
+                        'message' => 'Pesanan tidak ditemui.',
                     ]));
                 }
 
@@ -416,7 +416,7 @@ if (isset($_GET['action'])) {
                     http_response_code(422);
                     die(json_encode([
                         'success' => false,
-                        'message' => 'Pesanan pembayaran online mesti SELESAI DIBAYAR dahulu sebelum disahkan. Status pembayaran: ' . ($txn['payment_status'] ?? 'tidak diketahui'),
+                        'message' => 'Pesanan bayaran dalam talian mesti dibayar sepenuhnya dahulu sebelum disahkan. Status pembayaran: ' . ($txn['payment_status'] ?? 'tidak diketahui'),
                     ]));
                 }
                 
@@ -439,7 +439,7 @@ if (isset($_GET['action'])) {
                     http_response_code(422);
                     die(json_encode([
                         'success' => false,
-                        'message' => "Tidak boleh tukar dari {$txn['status']} ke {$new_status}.",
+                        'message' => "Tidak boleh menukar daripada {$txn['status']} kepada {$new_status}.",
                     ]));
                 }
 
@@ -558,7 +558,7 @@ if (isset($_GET['action'])) {
 
                 $resp = [
                     'success'    => true,
-                    'message'    => "Status pesanan dikemaskini ke {$new_status}.",
+                    'message'    => "Status pesanan dikemas kini kepada {$new_status}.",
                     'new_status' => $new_status,
                 ];
                 if (!empty($cash_reconcile)) {
@@ -812,7 +812,7 @@ function handle_image_upload(array $file): array
         return ['success'=>false,'message'=>'Ralat semasa memuat naik fail.'];
     }
     if (($file['size'] ?? 0) < 1 || $file['size'] > $max_size || !is_uploaded_file($file['tmp_name'])) {
-        return ['success'=>false,'message'=>'Imej mesti fail muat naik yang sah dan tidak melebihi 2MB.'];
+        return ['success'=>false,'message'=>'Imej mesti fail yang sah dan tidak melebihi 2MB.'];
     }
 
     // Validate MIME type and dimensions from file content, not its extension.
@@ -910,9 +910,9 @@ function payment_status_info(?string $status): array {
     return match((string) $status) {
         'paid'        => ['Dibayar',         'badge-green'],
         'paid_cash'   => ['Dibayar (Tunai)', 'badge-green'],
-        'pending'     => ['Pending Bayaran', 'badge-gold'],
+        'pending'     => ['Menunggu Bayaran', 'badge-gold'],
         'unpaid'      => ['Belum Bayar',     'badge-red'],
-        'unpaid_cash' => ['Tunai: Belum',    'badge-gold'],
+        'unpaid_cash' => ['Tunai: Belum Dibayar',    'badge-gold'],
         'failed'      => ['Bayaran Gagal',   'badge-red'],
         'refunded'    => ['Dipulangkan',     'badge-blue'],
         default       => ['—',               'badge-gray'],
@@ -1249,7 +1249,7 @@ function payment_status_info(?string $status): array {
             <span style="font-size:24px">⏳</span>
             <div>
               <div style="font-weight:600; font-size:14px">Akaun Penjual Menunggu Pengesahan</div>
-              <div style="font-size:12px; margin-top:2px">Akaun anda masih belum disahkan oleh PTU UTHM. Anda tidak boleh menambah atau mengaktifkan jualan produk sehingga disahkan.</div>
+              <div style="font-size:12px; margin-top:2px">Akaun anda masih belum disahkan oleh PTU UTHM. Anda tidak boleh menambah produk atau menjual sehingga akaun anda disahkan.</div>
             </div>
           </div>
         <?php elseif ($_SESSION['user']['verification_status'] === 'Ditolak'): ?>
@@ -1291,7 +1291,7 @@ function payment_status_info(?string $status): array {
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Purata Rating</div>
+            <div class="stat-label">Purata Penilaian</div>
             <div class="stat-val" id="sc-rating">
               <?= $stats['avg_rating'] > 0
                   ? $stats['avg_rating'].' ★'
@@ -1309,7 +1309,7 @@ function payment_status_info(?string $status): array {
           <!-- Weekly sales sparkline -->
           <div>
             <div class="section-hd">
-              <div class="section-title">Jualan 7 Hari Lepas</div>
+              <div class="section-title">Jualan 7 Hari Terakhir</div>
             </div>
             <div class="card-box">
               <div class="sparkline" id="sparkline">
@@ -1381,7 +1381,7 @@ function payment_status_info(?string $status): array {
                   <b style="color:var(--ink)"><?= htmlspecialchars($seller_trust['trust_level']) ?></b><br>
                   Keyakinan <?= htmlspecialchars($seller_trust['confidence_label']) ?>
                   (<?= number_format($seller_trust['confidence'],0) ?>%) ·
-                  <?= (int)$seller_trust['distinct_counterparties'] ?> rakan niaga unik.<br>
+                  <?= (int)$seller_trust['distinct_counterparties'] ?> pembeli berbeza.<br>
                   Kualiti rekod <?= number_format($seller_trust['raw_score'],1) ?>/100.
                 </div>
               </div>
@@ -1464,7 +1464,7 @@ function payment_status_info(?string $status): array {
                     <?php if (($o['payment_status'] ?? '') === 'unpaid_cash'): ?>
                     <button class="btn btn-primary btn-sm"
                       onclick="openCashModal(<?= (int)$o['transaction_id'] ?>, '<?= number_format($o['total_amount'], 2, '.', '') ?>')">
-                      Sah Terima Tunai
+                      Sahkan Terima Tunai
                     </button>
                     <button class="btn btn-success btn-sm" disabled
                       title="Sahkan penerimaan tunai dahulu sebelum mengesahkan pesanan.">
@@ -1769,8 +1769,8 @@ function payment_status_info(?string $status): array {
 ════════════════════════════════════════════════════════════ -->
 <div id="modal-edit" class="modal-bg" style="display:none">
   <div class="modal">
-    <div class="modal-title">Kemaskini Produk</div>
-    <div class="modal-sub">Ubah maklumat produk. Gambar baru akan menggantikan yang lama.</div>
+    <div class="modal-title">Kemas Kini Produk</div>
+    <div class="modal-sub">Ubah maklumat produk. Gambar baharu akan menggantikan gambar lama.</div>
 
     <input type="hidden" id="edit-id">
     <div class="form-group">
@@ -1810,7 +1810,7 @@ function payment_status_info(?string $status): array {
                 style="resize:vertical"></textarea>
     </div>
     <div class="form-group">
-      <label class="form-label">Tukar Gambar (kosongkan untuk kekal gambar lama)</label>
+      <label class="form-label">Tukar Gambar (kosongkan untuk mengekalkan gambar lama)</label>
       <input class="form-input" id="edit-image" type="file"
              accept="image/jpeg,image/png,image/webp"
              onchange="previewImage(this,'edit-preview')">
@@ -1833,7 +1833,7 @@ function payment_status_info(?string $status): array {
 ════════════════════════════════════════════════════════════ -->
 <div id="modal-cash" class="modal-bg" style="display:none">
   <div class="modal">
-    <div class="modal-title">Sah Penerimaan Bayaran Tunai</div>
+    <div class="modal-title">Sahkan Penerimaan Bayaran Tunai</div>
     <div class="modal-sub" id="cash-sub">Pesanan</div>
 
     <div class="form-group">
@@ -1848,22 +1848,22 @@ function payment_status_info(?string $status): array {
     <div class="form-group">
       <label class="form-label">Kaedah Penerimaan</label>
       <select class="form-input" id="cash-method">
-        <option>Hand-to-hand</option>
+        <option>Serah tangan</option>
         <option>Deposit ke akaun bank</option>
-        <option>Diterima melalui eWallet</option>
+        <option>Diterima melalui e-dompet</option>
       </select>
     </div>
 
     <div class="form-group">
       <label class="form-label">Nota (pilihan)</label>
       <input class="form-input" id="cash-notes" type="text" maxlength="255"
-             placeholder="cth. Serah di library FKEE">
+             placeholder="cth. Serah di perpustakaan FKEE">
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:8px">
       <button class="btn" onclick="closeCashModal()">Batal</button>
       <button class="btn btn-primary" id="cash-submit-btn"
-              onclick="submitCashConfirm()">Sah Penerimaan</button>
+              onclick="submitCashConfirm()">Sahkan Penerimaan</button>
     </div>
   </div>
 </div>
@@ -2003,7 +2003,7 @@ function openCashModal(txn_id, amount) {
   // Pre-fill the exact total: the server rejects any amount that does not
   // match total_amount within RM0.01, so the default must be the right number.
   document.getElementById('cash-amount').value = amount;
-  document.getElementById('cash-method').value = 'Hand-to-hand';
+  document.getElementById('cash-method').value = 'Serah tangan';
   document.getElementById('cash-notes').value  = '';
   m.style.display = 'flex';
 }
@@ -2037,7 +2037,7 @@ async function submitCashConfirm() {
     });
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Sah Penerimaan';
+    btn.textContent = 'Sahkan Penerimaan';
   }
 
   if (!data.success) {
@@ -2107,7 +2107,7 @@ async function updateOrder(txn_id, status) {
   }
 
   if (data.success) {
-    showToast(data.message || 'Status dikemaskini!', 'success');
+    showToast(data.message || 'Status dikemas kini!', 'success');
 
     // The same order can appear in BOTH the dashboard quick-view table and the
     // "Pesanan Diterima" tab. They now share a data-order-row key (not duplicate
@@ -2128,7 +2128,7 @@ async function updateOrder(txn_id, status) {
       if (btns) {
         if (status === 'Disahkan') {
           btns.innerHTML = `
-            <span style="font-size:11px;color:var(--ink3)">Menunggu pembeli</span>
+            <span style="font-size:11px;color:var(--ink3)">Menunggu pengesahan pembeli</span>
             <button class="btn btn-danger btn-sm"
               onclick="updateOrder(${txn_id},'Dibatalkan')">Batalkan</button>`;
         } else {
@@ -2173,9 +2173,9 @@ function payInfo(o) {
   const map = {
     paid:        ['Dibayar',         'badge-green'],
     paid_cash:   ['Dibayar (Tunai)', 'badge-green'],
-    pending:     ['Pending Bayaran', 'badge-gold'],
+    pending:     ['Menunggu Bayaran', 'badge-gold'],
     unpaid:      ['Belum Bayar',     'badge-red'],
-    unpaid_cash: ['Tunai: Belum',    'badge-gold'],
+    unpaid_cash: ['Tunai: Belum Dibayar',    'badge-gold'],
     failed:      ['Bayaran Gagal',   'badge-red'],
     refunded:    ['Dipulangkan',     'badge-blue'],
   };
@@ -2229,7 +2229,7 @@ async function loadOrders(statusFilter = _currentOrdersFilter, page = _currentOr
       if (o.payment_status === 'unpaid_cash') {
         actions = `
         <button class="btn btn-primary btn-sm"
-          onclick="openCashModal(${o.transaction_id}, '${parseFloat(o.total_amount).toFixed(2)}')">Sah Terima Tunai</button>
+          onclick="openCashModal(${o.transaction_id}, '${parseFloat(o.total_amount).toFixed(2)}')">Sahkan Terima Tunai</button>
         <button class="btn btn-success btn-sm" disabled
           title="Sahkan penerimaan tunai dahulu sebelum mengesahkan pesanan.">Sahkan</button>`;
       } else {
@@ -2242,7 +2242,7 @@ async function loadOrders(statusFilter = _currentOrdersFilter, page = _currentOr
           onclick="updateOrder(${o.transaction_id},'Dibatalkan')">Tolak</button>`;
     } else if (o.status === 'Disahkan') {
       actions = `
-        <span style="font-size:11px;color:var(--ink3)">Menunggu pembeli</span>
+        <span style="font-size:11px;color:var(--ink3)">Menunggu pengesahan pembeli</span>
         <button class="btn btn-danger btn-sm"
           onclick="updateOrder(${o.transaction_id},'Dibatalkan')">Batalkan</button>`;
     } else if (o.status === 'Selesai' && o.rating) {
@@ -2501,7 +2501,7 @@ async function submitEdit() {
 
 // ── Delete product ────────────────────────────────────────────
 async function deleteProduct(product_id) {
-  if (!confirm('Padamkan produk ini? Tindakan ini tidak boleh diulang.')) return;
+  if (!confirm('Padamkan produk ini? Tindakan ini tidak boleh dibatalkan.')) return;
   const data = await api('delete_product', {}, { product_id });
   showToast(data.message, data.success ? 'success' : 'error');
   if (data.success) {
@@ -2557,7 +2557,7 @@ function openSellerTrustModal() {
         yang sama dikira — lebih daripada itu tidak menaikkan skor anda.
         Pembatalan pembeli tidak menjejaskan penjual; hanya
         pembatalan oleh penjual dan aduan yang diputuskan memihak pembeli dikira.
-        Respons bermaksud keputusan pesanan dalam 12 jam, bukan sekadar membuka mesej.
+        Tindak balas bermaksud membuat keputusan pesanan dalam 12 jam, bukan sekadar membuka mesej.
       </div>
     </div>
 

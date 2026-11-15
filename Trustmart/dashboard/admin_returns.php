@@ -76,7 +76,7 @@ if (isset($_GET['action'])) {
             } catch (PDOException $e) {
                 error_log('[get_pending_returns] ' . $e->getMessage());
                 http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Database error']);
+                echo json_encode(['success' => false, 'message' => 'Ralat pangkalan data']);
             }
             exit;
 
@@ -110,7 +110,7 @@ if (isset($_GET['action'])) {
                 if (!$return_record) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Return tidak dijumpai']));
+                    die(json_encode(['success' => false, 'message' => 'Rekod pemulangan barang tidak ditemui']));
                 }
 
                 // Update return status with timestamp
@@ -135,7 +135,7 @@ if (isset($_GET['action'])) {
 
                 $pdo->prepare($update_sql)->execute([
                     $new_status,
-                    $admin_notes ?: 'Status updated to ' . $new_status,
+                    $admin_notes ?: 'Status dikemas kini kepada ' . $new_status,
                     $return_id
                 ]);
 
@@ -155,19 +155,19 @@ if (isset($_GET['action'])) {
                     $refund_result = process_payment_refund(
                         $pdo,
                         $return_record['payment_id'],
-                        'Return verified by admin - proceeding with refund',
+                        'Pemulangan barang disahkan oleh pentadbir - pemulangan wang diteruskan',
                         'admin'
                     );
 
                     if ($refund_result['success']) {
                         echo json_encode([
                             'success' => true,
-                            'message' => 'Return verified and refund processed: ' . $refund_result['message']
+                            'message' => 'Pemulangan barang disahkan dan pemulangan wang diproses: ' . $refund_result['message']
                         ]);
                     } else {
                         echo json_encode([
                             'success' => true,
-                            'message' => 'Return verified but refund failed: ' . $refund_result['error'],
+                            'message' => 'Pemulangan barang disahkan tetapi pemulangan wang gagal: ' . $refund_result['error'],
                             'warning' => true
                         ]);
                     }
@@ -175,7 +175,7 @@ if (isset($_GET['action'])) {
                     $pdo->commit();
                     echo json_encode([
                         'success' => true,
-                        'message' => 'Return status updated to ' . $new_status
+                        'message' => 'Status pemulangan barang dikemas kini kepada ' . $new_status
                     ]);
                 }
 
@@ -185,7 +185,7 @@ if (isset($_GET['action'])) {
                 }
                 error_log('[update_return_status] ' . $e->getMessage());
                 http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Database error']);
+                echo json_encode(['success' => false, 'message' => 'Ralat pangkalan data']);
             }
             exit;
 
@@ -216,14 +216,14 @@ if (isset($_GET['action'])) {
                 if (!$return_record) {
                     $pdo->rollBack();
                     http_response_code(404);
-                    die(json_encode(['success' => false, 'message' => 'Return tidak dijumpai']));
+                    die(json_encode(['success' => false, 'message' => 'Rekod pemulangan barang tidak ditemui']));
                 }
 
                 // Cancel return requirement
                 $pdo->prepare("
                     UPDATE return_shipments
                     SET status = 'cancelled',
-                        notes = CONCAT(COALESCE(notes, ''), '\n[', NOW(), '] Admin waived return: ', ?)
+                        notes = CONCAT(COALESCE(notes, ''), '\n[', NOW(), '] Pentadbir kecualikan pemulangan barang: ', ?)
                     WHERE return_id = ?
                 ")->execute([$waive_reason, $return_id]);
 
@@ -241,13 +241,13 @@ if (isset($_GET['action'])) {
                 $refund_result = process_payment_refund(
                     $pdo,
                     $return_record['payment_id'],
-                    'Return waived by admin: ' . $waive_reason,
+                    'Pemulangan barang dikecualikan oleh pentadbir: ' . $waive_reason,
                     'admin'
                 );
 
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Return waived and refund processed',
+                    'message' => 'Pemulangan barang dikecualikan dan pemulangan wang diproses',
                     'refund_result' => $refund_result
                 ]);
 
@@ -257,13 +257,13 @@ if (isset($_GET['action'])) {
                 }
                 error_log('[waive_return] ' . $e->getMessage());
                 http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Database error']);
+                echo json_encode(['success' => false, 'message' => 'Ralat pangkalan data']);
             }
             exit;
 
         default:
             http_response_code(400);
-            die(json_encode(['success' => false, 'message' => 'Action tidak diketahui']));
+            die(json_encode(['success' => false, 'message' => 'Tindakan tidak diketahui']));
     }
 }
 

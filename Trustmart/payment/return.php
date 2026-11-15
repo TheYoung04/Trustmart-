@@ -38,7 +38,7 @@ $payment = $stmt->fetch(PDO::FETCH_ASSOC);
 // as a string, so compare on ints to avoid a false "not found" on every load.
 $current_uid = (int) ($_SESSION['user']['user_id'] ?? 0);
 if (!$payment || $current_uid === 0 || (int) $payment['buyer_id'] !== $current_uid) {
-    $_SESSION['error_msg'] = 'Pembayaran tidak dijumpai';
+    $_SESSION['error_msg'] = 'Pembayaran tidak ditemui';
     header('Location: ../dashboard/buyer.php');
     exit;
 }
@@ -101,7 +101,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="margin: 30px 0; padding: 20px; background: white; border-radius: 8px;">
                 <p style="margin: 0;">
                     Ini mungkin disebabkan oleh baki tidak mencukupi, masalah teknikal,
-                    atau pembayaran dibatalkan.
+                    atau pembayaran yang dibatalkan.
                 </p>
             </div>
             
@@ -110,7 +110,7 @@ require_once __DIR__ . '/../includes/header.php';
                     Cuba Lagi
                 </a>
                 <a href="../dashboard/buyer.php" class="btn btn-secondary" style="margin: 5px;">
-                    Kembali ke Dashboard
+                    Kembali ke Papan Pemuka
                 </a>
             </div>
         </div>
@@ -126,14 +126,14 @@ require_once __DIR__ . '/../includes/header.php';
             
             <div style="margin: 30px 0; padding: 20px; background: white; border-radius: 8px;">
                 <p style="margin: 0;">
-                    Status pembayaran akan dikemaskini secara automatik.
+                    Status pembayaran akan dikemas kini secara automatik.
                     Sila semak dashboard anda dalam beberapa minit.
                 </p>
             </div>
             
             <div style="margin-top: 30px;">
                 <a href="../dashboard/buyer.php" class="btn btn-primary">
-                    Kembali ke Dashboard
+                    Kembali ke Papan Pemuka
                 </a>
             </div>
         </div>
